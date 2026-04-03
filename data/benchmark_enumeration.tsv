@@ -1,0 +1,6 @@
+D	coeff	alpha	distinct_values	total_roots	sharp_box_candidates	crude_box_candidates	row_candidates	sharp_box_ms	crude_box_ms	row_ms
+21	(2,1)	(30,0)	13	26	73	6589	19	0.026	1.371	0.020
+21	(2,1)	(40,0)	17	34	112	8950	29	0.040	1.797	0.035
+6	(3,-1)	(30,0)	6	12	27	6937	11	0.015	1.014	0.013
+5	(1,1)	(30,0)	27	54	123	2146	41	0.053	0.331	0.041
+10	(1,0)	(40,0)	14	28	32	4105	18	0.017	0.514	0.015
