@@ -78,24 +78,29 @@
 \begin{document}
 
 \begin{abstract}
-We present \texttt{quadratic\_diagonal}, a self-contained pure-Python reference implementation and
-accompanying exact algorithms for constructive representability by diagonal quadratic lattices over
-maximal real quadratic orders. The package exposes exact weighted-value enumeration,
-dynamic-programming and meet-in-the-middle solvers for single targets, and a batched bounded routine
-for representable targets and bounded truants. Its core primitive is weighted trace-form
-enumeration via $q_a(x)=\Tr(a x^2)$. We prove
-\[
-4A_aC_a-B_a^2=4\Disc(K_D)\N(a),
-\]
-deduce the distinct-value asymptotic, and use a canonical half-ellipse scan with exact order
-comparison. For fixed field and fixed lattice the resulting algorithms have pseudo-polynomial
-$O(\Tr(\alpha)^3)$ complexity for single targets and $O(B^3)$ for bounded search. The public
-repository includes the installable package, tests, benchmark scripts, a reproducible generic exact
-baseline for comparison, performance plots, and an executed notebook reproducing the computational
-section.
+\texttt{quadratic\_diagonal} is a self-contained pure-Python reference package for exact
+constructive representability by diagonal quadratic lattices over maximal real quadratic orders.
+Given a squarefree radicand, totally positive diagonal coefficients, and a totally positive target,
+the software decides representability and returns an integral witness when one exists. The package
+implements weighted trace-form enumeration, dynamic-programming and meet-in-the-middle solvers,
+and batched bounded search for representable targets and bounded truants. The accompanying article
+proves the weighted discriminant identity, the distinct-value asymptotic, exact row-interval
+correctness, and pseudo-polynomial arithmetic-step bounds for fixed fields and fixed lattices. All
+comparisons in the core routines use integer trace and norm arithmetic; no floating-point boundary
+or ordering tests are used. The repository contains the installable package, non-interactive drivers,
+regression tests, validation sweeps, benchmark scripts, generated tables, performance plots, and an
+executed notebook. The implementation is intended both as a reusable research tool and as an
+executable specification that can be translated into compiled code or integrated into SageMath-style
+Python workflows.
 \end{abstract}
 
 \maketitle
+
+\subsection*{ACM CCS 2012}
+Mathematics of computing~--~Mathematical software; Mathematics of computing~--~Algebraic
+algorithms; Mathematics of computing~--~Number theory; Computing methodologies~--~Symbolic and
+algebraic manipulation; Software and its engineering~--~Software libraries and repositories; Theory
+of computation~--~Design and analysis of algorithms.
 
 \section{Introduction}
 
@@ -135,9 +140,8 @@ Rothkegel later gave an algorithm for constructing anisotropic parts over number
 for isotropic vectors over arbitrary global fields \cite{KopSq,KopIso}. In the real-quadratic
 integral setting, Ra\v ska studied when all elements of $m\OD^+$ are sums of squares and gave an
 efficient algorithm for that family-wise question \cite{Raska}. The present repository is organised
-in the same spirit as the author's companion public repository
-\url{https://github.com/tomaszkania/quadratic_sos}, which treats the unweighted
-$\langle 1,\dots,1\rangle$ case. For broader arithmetic background on universal forms and
+in the same spirit as the author's companion public repository \texttt{quadratic\_sos} \cite{KaniaQSOS},
+which treats the unweighted $\langle 1,\dots,1\rangle$ case. For broader arithmetic background on universal forms and
 indecomposables over totally real fields we refer to Kala's survey \cite{KalaSurvey}; recent work
 of Kala, Kr\'asensk\'y, and Romeo places criterion sets and diagonal universality in a general
 framework \cite{KKR}, and their interaction with sums of squares has become more explicit in work
@@ -186,7 +190,7 @@ $O(B^3)$ bound for bounded truants over a fixed field and a fixed diagonal latti
 \item We provide a self-contained Python package, regression tests, benchmark tables, performance
 plots, and an executed notebook reporting meaningful structural quantities: distinct weighted values,
 canonical candidate counts, DP state sizes, half-sum sizes, coefficient-order effects,
-repeated-coefficient caching gains, and split preprocessing/combination/end-to-end timings.
+repeated-coefficient caching gains, and split preprocessing, combination, and end-to-end timings.
 \end{enumerate}
 
 \subsection*{Software availability and reproducibility}
@@ -200,6 +204,14 @@ which regenerates all TSV tables in \path{data/} together with the performance p
 \path{paper/figures/}, and the executed notebook \path{notebooks/paper_illustrations.ipynb}.
 The structural columns in the computational section are deterministic; only the timing columns are
 machine-dependent.
+
+For a TOMS Algorithm-paper submission the software component is supplied as a separate archive in
+the repository's \path{submission/} directory. That archive contains the installable source package,
+non-interactive driver programs, regression and validation tests, expected-output summaries, table
+and figure reproduction scripts, a manifest, and portability notes. The smoke-test driver
+\path{scripts/run_all_checks.py} requires no interactive input and is intended as the first command
+for referees; it exercises the public API, checks the regression suite, regenerates deterministic
+structural data, and records timing-dependent quantities separately.
 
 The organisation is as follows. Section~\ref{sec:prelim} recalls exact arithmetic in $\OD$ and the
 trace-norm comparison lemma used in the implementation. Section~\ref{sec:weighted} studies the
@@ -1281,10 +1293,13 @@ Section~\ref{sec:bounded}. The code stores distinct weighted values by default, 
 coefficients internally by increasing set size, caches repeated coefficients, and records the
 structural state sizes that actually drive the representability layer. The reproducibility workflow
 is intentionally simple: \texttt{python -m pytest -q} runs the regression suite,
+\texttt{python scripts/run\_all\_checks.py} runs the non-interactive TOMS smoke test,
 \texttt{python scripts/reproduce\_tables.py} regenerates the TSV tables in \path{data/} together
 with the performance plots in \path{paper/figures/}, and the executed notebook reproduces the
 worked examples. The repository is organised in the same spirit as the companion public repository
-\url{https://github.com/tomaszkania/quadratic_sos} for the unweighted case.
+\texttt{quadratic\_sos}~\cite{KaniaQSOS} for the unweighted case. The \path{submission/}
+directory contains the separated article PDF and software-component archive expected for a TOMS
+Algorithm-paper submission.
 
 The empirical comparisons therefore focus on the right quantities.
 \begin{enumerate}[label=\textup{(\roman*)},itemsep=0.2em]
@@ -1599,25 +1614,30 @@ V.~Kala, J.~Kr\'asensk\'y, and G.~Romeo,
 \emph{Universality criterion sets for quadratic forms over number fields},
 arXiv:2410.22507.
 
-\bibitem{KopCz}
-P.~Koprowski and A.~Czoga{\l}a,
-\emph{Computing with quadratic forms over number fields},
-J. Symbolic Comput. \textbf{89} (2018), 129--145.
+\bibitem{KaniaQSOS}
+T.~Kania,
+\emph{quadratic\_sos: Exact integral lengths of sums of squares in real quadratic rings},
+software repository, 2026. \url{https://github.com/tomaszkania/quadratic_sos}.
+
+\bibitem{KopSq}
+P.~Koprowski,
+\emph{Solving sums of squares in global fields},
+Proc. ISSAC 2022, 319--324; see also arXiv:2111.08558.
 
 \bibitem{KopIso}
 P.~Koprowski,
 \emph{Isotropic vectors over global fields},
 Math. Comp. \textbf{95} (2026), 1541--1567.
 
+\bibitem{KopCz}
+P.~Koprowski and A.~Czoga{\l}a,
+\emph{Computing with quadratic forms over number fields},
+J. Symbolic Comput. \textbf{89} (2018), 129--145.
+
 \bibitem{KopRoth}
 P.~Koprowski and B.~Rothkegel,
 \emph{The anisotropic part of a quadratic form over a number field},
 J. Symbolic Comput. \textbf{115} (2023), 39--52.
-
-\bibitem{KopSq}
-P.~Koprowski,
-\emph{Solving sums of squares in global fields},
-Proc. ISSAC 2022, 319--324; see also arXiv:2111.08558.
 
 \bibitem{Raska}
 M.~Ra\v ska,

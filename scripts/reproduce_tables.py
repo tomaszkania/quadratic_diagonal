@@ -282,6 +282,15 @@ def _write_arithmetic_examples(path: Path) -> None:
             handle.write(f"{D}\t{coeffs_text}\t{B}\t{truants_text}\n")
 
 
+
+
+def _hatched_bar(ax, positions, values, *, width, label, hatch):
+    """Draw a monochrome-friendly hatched bar group."""
+    bars = ax.bar(positions, values, width=width, label=label, facecolor="white", edgecolor="black")
+    for bar in bars:
+        bar.set_hatch(hatch)
+    return bars
+
 def _save_plot(fig: plt.Figure, pdf_path: Path, png_path: Path) -> None:
     """Save a Matplotlib figure in both PDF and PNG formats.
 
@@ -315,9 +324,9 @@ def _plot_enumeration_candidates(rows: Sequence, out_dir: Path) -> None:
     width = 0.25
     fig = plt.figure(figsize=(8.0, 3.8))
     ax = fig.add_subplot(1, 1, 1)
-    ax.bar([i - width for i in x], [row.row_candidates for row in rows], width=width, label="row")
-    ax.bar(x, [row.sharp_box_candidates for row in rows], width=width, label="sharp")
-    ax.bar([i + width for i in x], [row.crude_box_candidates for row in rows], width=width, label="crude")
+    _hatched_bar(ax, [i - width for i in x], [row.row_candidates for row in rows], width=width, label="row", hatch="")
+    _hatched_bar(ax, x, [row.sharp_box_candidates for row in rows], width=width, label="sharp", hatch="//")
+    _hatched_bar(ax, [i + width for i in x], [row.crude_box_candidates for row in rows], width=width, label="crude", hatch="xx")
     ax.set_yscale("log")
     ax.set_ylabel("canonical candidates")
     ax.set_xticks(x)
@@ -342,9 +351,9 @@ def _plot_generic_baseline_runtime(rows: Sequence, out_dir: Path) -> None:
     width = 0.25
     fig = plt.figure(figsize=(7.0, 3.9))
     ax = fig.add_subplot(1, 1, 1)
-    ax.bar([i - width for i in x], [row.dp_total_ms for row in rows], width=width, label="DP")
-    ax.bar(x, [row.mitm_total_ms for row in rows], width=width, label="MITM")
-    ax.bar([i + width for i in x], [row.generic_total_ms for row in rows], width=width, label="generic")
+    _hatched_bar(ax, [i - width for i in x], [row.dp_total_ms for row in rows], width=width, label="DP", hatch="")
+    _hatched_bar(ax, x, [row.mitm_total_ms for row in rows], width=width, label="MITM", hatch="//")
+    _hatched_bar(ax, [i + width for i in x], [row.generic_total_ms for row in rows], width=width, label="generic", hatch="xx")
     ax.set_ylabel("end-to-end runtime (ms)")
     ax.set_yscale("log")
     ax.set_xticks(x)
@@ -369,8 +378,8 @@ def _plot_bounded_runtime(rows: Sequence, out_dir: Path) -> None:
     width = 0.35
     fig = plt.figure(figsize=(6.0, 3.8))
     ax = fig.add_subplot(1, 1, 1)
-    ax.bar([i - width / 2 for i in x], [row.batched_total_ms for row in rows], width=width, label="batched")
-    ax.bar([i + width / 2 for i in x], [row.naive_total_ms for row in rows], width=width, label="naive")
+    _hatched_bar(ax, [i - width / 2 for i in x], [row.batched_total_ms for row in rows], width=width, label="batched", hatch="")
+    _hatched_bar(ax, [i + width / 2 for i in x], [row.naive_total_ms for row in rows], width=width, label="naive", hatch="//")
     ax.set_ylabel("end-to-end runtime (ms)")
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
@@ -394,8 +403,8 @@ def _plot_optimisation_runtime(rows: Sequence, out_dir: Path) -> None:
     width = 0.35
     fig = plt.figure(figsize=(6.5, 3.8))
     ax = fig.add_subplot(1, 1, 1)
-    ax.bar([i - width / 2 for i in x], [row.original_total_ms for row in rows], width=width, label="original")
-    ax.bar([i + width / 2 for i in x], [row.optimised_total_ms for row in rows], width=width, label="optimised")
+    _hatched_bar(ax, [i - width / 2 for i in x], [row.original_total_ms for row in rows], width=width, label="original", hatch="")
+    _hatched_bar(ax, [i + width / 2 for i in x], [row.optimised_total_ms for row in rows], width=width, label="optimised", hatch="//")
     ax.set_ylabel("DP end-to-end runtime (ms)")
     ax.set_xticks(x)
     ax.set_xticklabels(labels)

@@ -21,9 +21,9 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-notebook = ["jupyter", "matplotlib"]
+notebook = ["jupyter", "matplotlib", "nbconvert"]
 test = ["pytest"]
-repro = ["jupyter", "matplotlib", "pytest"]
+repro = ["jupyter", "matplotlib", "pytest", "nbconvert"]
 
 [project.urls]
 Repository = "https://github.com/tomaszkania/quadratic_diagonal"

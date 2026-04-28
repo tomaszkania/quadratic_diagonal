@@ -1,0 +1,4 @@
+quadratic_diagonal smoke test OK
+timestamp_utc=2026-04-27T23:11:39.723388+00:00
+regression_tests=17
+drivers=pytest,reproduce_tables,validation_sweep
