@@ -1,9 +1,10 @@
 """Public API for the quadratic_diagonal package.
 
 This package provides exact constructive representability algorithms for
-
 diagonal quadratic lattices over maximal real quadratic orders.
 """
+
+__version__ = "0.2.0"
 
 from .weighted_diagonal_exact import (
     Pair,
@@ -45,6 +46,7 @@ from .weighted_diagonal_exact import (
 )
 
 __all__ = [
+    '__version__',
     'Pair',
     'RealQuadraticOrder',
     'WeightedTraceForm',

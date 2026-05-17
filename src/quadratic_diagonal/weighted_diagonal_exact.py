@@ -817,6 +817,7 @@ class BoundedBenchmarkRow:
     batched_total_ms: float
     naive_total_ms: float
 
+
 @dataclass(frozen=True)
 class OptimisationBenchmarkRow:
     """One benchmark row for coefficient-order optimisation and caching."""
@@ -1574,6 +1575,7 @@ def _half_sums(
         prefix_counts.append(len(states))
     return states, tuple(prefix_counts)
 
+
 def _cartesian_product_from_value_lists(
     order: RealQuadraticOrder,
     value_lists: Sequence[Sequence[Pair]],
@@ -1919,7 +1921,6 @@ def bounded_truants_naive(
     return result
 
 
-
 def row_candidate_count_by_trace(
     order: RealQuadraticOrder,
     coeff: Pair,
@@ -2197,31 +2198,8 @@ def benchmark_representability(
         if represented_dp != dp_result.represented or represented_mitm != mitm_result.represented:
             raise AssertionError("Combination-only routines disagree with the public API")
 
-        preprocessing_times = [
-            _prepare_single_target(order, coeffs, alpha, reorder_by_value_count=True, cache_repeated_coeffs=True).preprocessing_seconds
-            for _ in range(repeats)
-        ]
-        dp_combination_times = [
-            _dp_from_value_lists(order, prepared.value_lists, alpha)[3]
-            for _ in range(repeats)
-        ]
-        mitm_combination_times = []
-        for _ in range(repeats):
-            start = perf_counter()
-            left_sums_rt, _ = _half_sums(order, left_values, alpha)
-            right_sums_rt, _ = _half_sums(order, right_values, alpha)
-            if len(left_sums_rt) <= len(right_sums_rt):
-                small_rt = left_sums_rt
-                large_rt = right_sums_rt
-            else:
-                small_rt = right_sums_rt
-                large_rt = left_sums_rt
-            for partial_sum in small_rt:
-                if order.sub(alpha, partial_sum) in large_rt:
-                    break
-            mitm_combination_times.append(perf_counter() - start)
-        dp_total_times = [diagonal_representability_dp(order, coeffs, alpha).elapsed_seconds for _ in range(repeats)]
-        mitm_total_times = [diagonal_representability_mitm(order, coeffs, alpha).elapsed_seconds for _ in range(repeats)]
+        dp_runs = [diagonal_representability_dp(order, coeffs, alpha) for _ in range(repeats)]
+        mitm_runs = [diagonal_representability_mitm(order, coeffs, alpha) for _ in range(repeats)]
 
         rows.append(
             RepresentabilityBenchmarkRow(
@@ -2233,11 +2211,11 @@ def benchmark_representability(
                 dp_state_counts=dp_state_counts,
                 mitm_left_states=len(left_sums),
                 mitm_right_states=len(right_sums),
-                preprocessing_ms=1000.0 * median(preprocessing_times),
-                dp_combination_ms=1000.0 * median(dp_combination_times),
-                dp_total_ms=1000.0 * median(dp_total_times),
-                mitm_combination_ms=1000.0 * median(mitm_combination_times),
-                mitm_total_ms=1000.0 * median(mitm_total_times),
+                preprocessing_ms=1000.0 * median(run.preprocessing_seconds for run in dp_runs),
+                dp_combination_ms=1000.0 * median(run.combination_seconds for run in dp_runs),
+                dp_total_ms=1000.0 * median(run.elapsed_seconds for run in dp_runs),
+                mitm_combination_ms=1000.0 * median(run.combination_seconds for run in mitm_runs),
+                mitm_total_ms=1000.0 * median(run.elapsed_seconds for run in mitm_runs),
             )
         )
     return rows
@@ -2307,6 +2285,7 @@ def benchmark_bounded_truants(
         )
     return rows
 
+
 def benchmark_generic_baseline(
     cases: Iterable[Tuple[int, Sequence[Pair], Pair]],
     repeats: int = 3,
@@ -2336,19 +2315,39 @@ def benchmark_generic_baseline(
         order = RealQuadraticOrder(D)
         dp_result = diagonal_representability_dp(order, coeffs, alpha)
         mitm_result = diagonal_representability_mitm(order, coeffs, alpha)
-        prepared = _prepare_single_target(order, coeffs, alpha, reorder_by_value_count=True, cache_repeated_coeffs=True)
-        represented_generic, _, cartesian_product_size, _ = _cartesian_product_from_value_lists(order, prepared.value_lists, alpha)
-        if represented_generic != dp_result.represented or represented_generic != mitm_result.represented:
+        prepared = _prepare_single_target(
+            order,
+            coeffs,
+            alpha,
+            reorder_by_value_count=True,
+            cache_repeated_coeffs=True,
+        )
+        represented_generic, _, cartesian_product_size, _ = _cartesian_product_from_value_lists(
+            order, prepared.value_lists, alpha
+        )
+        if (
+            represented_generic != dp_result.represented
+            or represented_generic != mitm_result.represented
+        ):
             raise AssertionError("Generic exact baseline disagrees with DP/MITM")
-        preprocessing_times = [
-            _prepare_single_target(order, coeffs, alpha, reorder_by_value_count=True, cache_repeated_coeffs=True).preprocessing_seconds
-            for _ in range(repeats)
-        ]
-        # Recompute the preprocessing and full Cartesian-product search in each repetition.
-        generic_total_times = []
+        # Recompute preprocessing and full Cartesian-product search in each repetition.
+        # Keep paired preprocessing timings with the total timings so the reported
+        # generic total is not accidentally smaller than an independently sampled
+        # preprocessing median on very small benchmark instances.
+        preprocessing_times: List[float] = []
+        generic_total_times: List[float] = []
         for _ in range(repeats):
-            prepared_rt = _prepare_single_target(order, coeffs, alpha, reorder_by_value_count=True, cache_repeated_coeffs=True)
-            _, _, _, combination_rt = _cartesian_product_from_value_lists(order, prepared_rt.value_lists, alpha)
+            prepared_rt = _prepare_single_target(
+                order,
+                coeffs,
+                alpha,
+                reorder_by_value_count=True,
+                cache_repeated_coeffs=True,
+            )
+            _, _, _, combination_rt = _cartesian_product_from_value_lists(
+                order, prepared_rt.value_lists, alpha
+            )
+            preprocessing_times.append(prepared_rt.preprocessing_seconds)
             generic_total_times.append(prepared_rt.preprocessing_seconds + combination_rt)
         dp_total_times = [diagonal_representability_dp(order, coeffs, alpha).elapsed_seconds for _ in range(repeats)]
         mitm_total_times = [diagonal_representability_mitm(order, coeffs, alpha).elapsed_seconds for _ in range(repeats)]

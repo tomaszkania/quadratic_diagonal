@@ -8,9 +8,10 @@ from __future__ import annotations
 
 from pathlib import Path
 import sys
-from typing import Iterable, Sequence
+from typing import Any, Sequence
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
@@ -30,7 +31,7 @@ from quadratic_diagonal import (
 )
 
 
-def _write_enumeration_table(path: Path) -> list:
+def _write_enumeration_table(path: Path) -> list[Any]:
     """Write the weighted-enumeration benchmark table.
 
     Parameters
@@ -67,7 +68,7 @@ def _write_enumeration_table(path: Path) -> list:
     return rows
 
 
-def _write_representability_table(path: Path) -> list:
+def _write_representability_table(path: Path) -> list[Any]:
     """Write the representability benchmark table.
 
     Parameters
@@ -109,7 +110,7 @@ def _write_representability_table(path: Path) -> list:
     return rows
 
 
-def _write_generic_baseline_table(path: Path) -> list:
+def _write_generic_baseline_table(path: Path) -> list[Any]:
     """Write the surrogate general-purpose baseline benchmark table.
 
     Parameters
@@ -148,7 +149,7 @@ def _write_generic_baseline_table(path: Path) -> list:
     return rows
 
 
-def _write_bounded_table(path: Path) -> list:
+def _write_bounded_table(path: Path) -> list[Any]:
     """Write the bounded-search benchmark table.
 
     Parameters
@@ -186,7 +187,7 @@ def _write_bounded_table(path: Path) -> list:
     return rows
 
 
-def _write_optimisation_table(path: Path) -> list:
+def _write_optimisation_table(path: Path) -> list[Any]:
     """Write the optimisation benchmark table.
 
     Parameters
@@ -229,7 +230,7 @@ def _write_optimisation_table(path: Path) -> list:
     return rows
 
 
-def _write_balancing_table(path: Path) -> list:
+def _write_balancing_table(path: Path) -> list[Any]:
     """Write the balancing benchmark table.
 
     Parameters
@@ -282,14 +283,21 @@ def _write_arithmetic_examples(path: Path) -> None:
             handle.write(f"{D}\t{coeffs_text}\t{B}\t{truants_text}\n")
 
 
-
-
-def _hatched_bar(ax, positions, values, *, width, label, hatch):
+def _hatched_bar(
+    ax: Any,
+    positions: Sequence[float],
+    values: Sequence[float],
+    *,
+    width: float,
+    label: str,
+    hatch: str,
+) -> Any:
     """Draw a monochrome-friendly hatched bar group."""
     bars = ax.bar(positions, values, width=width, label=label, facecolor="white", edgecolor="black")
     for bar in bars:
         bar.set_hatch(hatch)
     return bars
+
 
 def _save_plot(fig: plt.Figure, pdf_path: Path, png_path: Path) -> None:
     """Save a Matplotlib figure in both PDF and PNG formats.
@@ -309,7 +317,7 @@ def _save_plot(fig: plt.Figure, pdf_path: Path, png_path: Path) -> None:
     plt.close(fig)
 
 
-def _plot_enumeration_candidates(rows: Sequence, out_dir: Path) -> None:
+def _plot_enumeration_candidates(rows: Sequence[Any], out_dir: Path) -> None:
     """Plot canonical candidate counts for enumeration benchmarks.
 
     Parameters
@@ -336,7 +344,7 @@ def _plot_enumeration_candidates(rows: Sequence, out_dir: Path) -> None:
     _save_plot(fig, out_dir / "enumeration_candidates.pdf", out_dir / "enumeration_candidates.png")
 
 
-def _plot_generic_baseline_runtime(rows: Sequence, out_dir: Path) -> None:
+def _plot_generic_baseline_runtime(rows: Sequence[Any], out_dir: Path) -> None:
     """Plot end-to-end runtimes against the generic exact baseline.
 
     Parameters
@@ -363,7 +371,7 @@ def _plot_generic_baseline_runtime(rows: Sequence, out_dir: Path) -> None:
     _save_plot(fig, out_dir / "generic_baseline_runtime.pdf", out_dir / "generic_baseline_runtime.png")
 
 
-def _plot_bounded_runtime(rows: Sequence, out_dir: Path) -> None:
+def _plot_bounded_runtime(rows: Sequence[Any], out_dir: Path) -> None:
     """Plot end-to-end runtimes for batched versus naive bounded search.
 
     Parameters
@@ -388,7 +396,7 @@ def _plot_bounded_runtime(rows: Sequence, out_dir: Path) -> None:
     _save_plot(fig, out_dir / "bounded_runtime.pdf", out_dir / "bounded_runtime.png")
 
 
-def _plot_optimisation_runtime(rows: Sequence, out_dir: Path) -> None:
+def _plot_optimisation_runtime(rows: Sequence[Any], out_dir: Path) -> None:
     """Plot end-to-end runtime before and after ordering/caching optimisation.
 
     Parameters

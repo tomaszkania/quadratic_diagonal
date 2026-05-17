@@ -2,6 +2,8 @@
 
 **Exact diagonal representability over real quadratic orders**
 
+Version: **0.2.0** (TOMS submission refresh)
+
 Public repository (intended submission/software URL):
 <https://github.com/tomaszkania/quadratic_diagonal>
 
@@ -108,7 +110,7 @@ counts from runtime measurements.
 The script `scripts/reproduce_tables.py` also regenerates the plots below.
 These plots are intended to visualise the relative gains from the algorithmic
 choices in the paper rather than to compete with compiled computer algebra
-systems in absolute wall time. To keep the artifact self-contained, the paper
+systems in absolute wall time. To keep the artefact self-contained, the paper
 benchmarks the specialised routines against a reproducible generic exact
 baseline implemented in the package, rather than against an external CAS that
 would introduce non-portable dependencies.
@@ -130,9 +132,9 @@ would introduce non-portable dependencies.
 ![Optimisation effect on constructive DP](paper/figures/optimisation_runtime.png)
 
 
-## TOMS Algorithm-paper artifact
+## TOMS Algorithm-paper artefact
 
-The repository is prepared as a TOMS Algorithm-paper software component.  The
+The repository is prepared as a TOMS Algorithm-paper software component and the manuscript source in `paper/` uses the ACM `acmart` single-column review format.  The
 core package has no runtime dependency outside the Python standard library.  The
 non-interactive smoke-test command for referees is:
 
@@ -143,8 +145,8 @@ python scripts/run_all_checks.py
 
 The smoke test runs the regression suite, regenerates representative data, and
 writes `data/run_all_checks_summary.txt`.  Full reproduction scripts and the
-executed notebook are included in the repository.  A separate convenience archive
-for the TOMS software component is generated in `submission/`.
+executed notebook are included in the repository.  A separate convenience archive for the TOMS software component can be generated with
+`python scripts/make_submission_archive.py` and is written to `submission/`.
 
 Optional external-CAS checks can be probed with:
 

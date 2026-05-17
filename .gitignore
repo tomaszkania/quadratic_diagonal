@@ -7,3 +7,10 @@ __pycache__/
 paper/*.aux
 paper/*.log
 paper/*.out
+build/
+dist/
+paper/*.bbl
+paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
+submission/*.zip

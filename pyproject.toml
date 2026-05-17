@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quadratic-diagonal"
-version = "0.1.0"
+version = "0.2.0"
 description = "Exact diagonal representability over real quadratic rings"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -14,10 +14,15 @@ authors = [
 ]
 keywords = ["number theory", "quadratic forms", "real quadratic fields", "diagonal representability"]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: MIT License",
   "Intended Audience :: Science/Research",
   "Topic :: Scientific/Engineering :: Mathematics",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
 
 [project.optional-dependencies]

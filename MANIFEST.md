@@ -1,10 +1,11 @@
 # Manifest
 
+Source-tree contents for the `quadratic_diagonal` 0.2.0 TOMS submission.
+Generated submission archives in `submission/` and transient build files are omitted.
+
+- `MANIFEST.md`
 - `.gitignore`
-- `.pytest_cache/.gitignore`
-- `.pytest_cache/CACHEDIR.TAG`
-- `.pytest_cache/README.md`
-- `.pytest_cache/v/cache/nodeids`
+- `CHANGELOG.md`
 - `CITATION.cff`
 - `LICENSE`
 - `Makefile`
@@ -31,17 +32,14 @@
 - `paper/figures/generic_baseline_runtime.png`
 - `paper/figures/optimisation_runtime.pdf`
 - `paper/figures/optimisation_runtime.png`
+- `paper/references.bib`
 - `pyproject.toml`
 - `requirements.txt`
+- `scripts/make_submission_archive.py`
 - `scripts/optional_cas_baselines.py`
 - `scripts/reproduce_tables.py`
 - `scripts/run_all_checks.py`
 - `scripts/validation_sweep.py`
 - `src/quadratic_diagonal/__init__.py`
 - `src/quadratic_diagonal/weighted_diagonal_exact.py`
-- `src/quadratic_diagonal.egg-info/PKG-INFO`
-- `src/quadratic_diagonal.egg-info/SOURCES.txt`
-- `src/quadratic_diagonal.egg-info/dependency_links.txt`
-- `src/quadratic_diagonal.egg-info/requires.txt`
-- `src/quadratic_diagonal.egg-info/top_level.txt`
 - `tests/test_all.py`

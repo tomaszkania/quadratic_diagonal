@@ -1,26 +1,16 @@
-\documentclass[a4paper,11pt]{amsart}
-\usepackage{a4wide}
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{lmodern}
-\usepackage{microtype}
-\usepackage{amsmath,amssymb,amsthm,mathtools}
-\usepackage{booktabs,tabularx,array,longtable}
-\usepackage{graphicx}
-\usepackage{capt-of}
-\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
-\usepackage{float}
-\usepackage[shortlabels]{enumitem}
-\usepackage{xcolor}
-\usepackage{url}
-\urlstyle{same}
-\usepackage{hyperref}
-\hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black}
+\documentclass[manuscript]{acmart}
 
-\renewcommand{\leq}{\leqslant}
-\renewcommand{\geq}{\geqslant}
-\renewcommand{\le}{\leqslant}
-\renewcommand{\ge}{\geqslant}
+\setcopyright{none}
+\acmJournal{TOMS}
+\acmYear{2026}
+\citestyle{acmauthoryear}
+
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{tabularx,array,longtable}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage[shortlabels]{enumitem}
 
 \theoremstyle{plain}
 \newtheorem{theorem}{Theorem}[section]
@@ -40,17 +30,6 @@
   {}% Head spec
 \theoremstyle{nonitalicremark}
 \newtheorem{remark}[theorem]{Remark}
-
-\author[T.~Kania]{Tomasz Kania}
-\address{Institute of Mathematics, Czech Academy of Sciences,\\
-\v{Z}itn\'a 25, 115~67 Prague 1, Czech Republic\\
-\& Institute of Mathematics, Jagiellonian University\\
-{\L}ojasiewicza 6, 30-348 Krak\'ow, Poland}
-\email{tomasz.marcin.kania@gmail.com}
-\thanks{IM CAS (RVO 67985840).}
-\date{\today}
-\keywords{algorithms, quadratic forms, real quadratic fields, rings of integers, diagonal representability, dynamic programming}
-\subjclass[2020]{11E25, 11R11, 11Y16, 68W30}
 
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\R}{\mathbb{R}}
@@ -73,7 +52,19 @@
 \newcommand{\cT}{\mathcal{T}}
 \graphicspath{{figures/}}
 
-\title[Exact diagonal representability over real quadratic orders]{Exact diagonal representability over real quadratic orders\ via weighted trace-form enumeration}
+\title[Exact diagonal representability over real quadratic orders]{Exact diagonal representability over real quadratic orders via weighted trace-form enumeration}
+
+\author{Tomasz Kania}
+\authornote{IM CAS (RVO 67985840).}
+\affiliation{%
+  \institution{Institute of Mathematics, Czech Academy of Sciences}
+  \city{Prague}
+  \country{Czech Republic}}
+\affiliation{%
+  \institution{Institute of Mathematics, Jagiellonian University}
+  \city{Krak\'ow}
+  \country{Poland}}
+\email{tomasz.marcin.kania@gmail.com}
 
 \begin{document}
 
@@ -94,13 +85,15 @@ executable specification that can be translated into compiled code or integrated
 Python workflows.
 \end{abstract}
 
-\maketitle
 
-\subsection*{ACM CCS 2012}
-Mathematics of computing~--~Mathematical software; Mathematics of computing~--~Algebraic
-algorithms; Mathematics of computing~--~Number theory; Computing methodologies~--~Symbolic and
-algebraic manipulation; Software and its engineering~--~Software libraries and repositories; Theory
-of computation~--~Design and analysis of algorithms.
+\ccsdesc[500]{Mathematics of computing~Mathematical software}
+\ccsdesc[300]{Mathematics of computing~Number theory}
+\ccsdesc[300]{Mathematics of computing~Algebraic algorithms}
+\ccsdesc[300]{Software and its engineering~Software libraries and repositories}
+
+\keywords{algorithms, quadratic forms, real quadratic fields, rings of integers, diagonal representability, dynamic programming, mathematical software}
+
+\maketitle
 
 \section{Introduction}
 
@@ -125,11 +118,10 @@ We want to decide whether
 \alpha = a_1x_1^2+\cdots+a_rx_r^2
 \qquad (x_1,\dots,x_r\in\OD),
 \]
-and, if so, to construct such a representation. The package API is centred around the exact order
-model \texttt{RealQuadraticOrder}, the weighted-search routine \path{enumerate_weighted_search},
-the constructive solvers \path{diagonal_representability_dp} and
-\path{diagonal_representability_mitm}, and the batched bounded routines
-\path{batched_bounded_representables} and \path{bounded_truants_batched}.
+and, if so, to construct such a representation. The package API exposes an exact order
+model and routines for weighted enumeration, constructive dynamic programming,
+meet-in-the-middle search, and bounded-target batching; the README documents the
+precise entry-point names and command-line reproduction scripts.
 
 From the literature viewpoint, this work sits between algorithmic quadratic-form computation over
 fields and arithmetic investigations over rings of integers. Koprowski and Czoga{\l}a developed
@@ -1318,8 +1310,9 @@ The empirical comparisons therefore focus on the right quantities.
       |n|\le \lfloor\sqrt{4A_aT}\rfloor.
       \]
 \item The weighted-search implementation scans only a canonical half-ellipse, so the candidate-count
-      columns below report canonical candidates rather than all non-zero roots. The omitted full root
-      counts are recovered by doubling and adding the central point.
+      columns below report canonical candidates rather than all non-zero roots. The omitted non-zero root
+      counts are recovered by doubling; the full trace-ellipse lattice-point count is recovered by
+      doubling and adding the central point.
 \item For diagonal representability, the relevant sizes are the distinct value counts
       $|\cS_{a_i}(\alpha)|$ and the DP or half-sum state counts, not the raw number of roots.
 \item The timing columns are now split honestly into preprocessing, combination, and end-to-end
@@ -1341,18 +1334,18 @@ therefore compares the specialised solvers against a bundled generic exact basel
 same weighted-value preprocessing and then expands the full Cartesian product of the value lists.
 
 
-\begin{table}[H]
+\begin{table}[tbp]
 \centering
 \scriptsize
 \begin{tabular}{ccccrrrrrr}
 \toprule
 $D$ & $a$ & $\alpha$ & $|\cS_a(\alpha)|$ & canon.\ row & canon.\ sharp & canon.\ crude & row ms & sharp ms & crude ms \\
 \midrule
-21 & $(2,1)$ & $(30,0)$ & 13 & 19 & 73  & 6589 & 0.029 & 0.037 & 1.334 \\
-21 & $(2,1)$ & $(40,0)$ & 17 & 29 & 112 & 8950 & 0.041 & 0.058 & 1.851 \\
-6  & $(3,-1)$ & $(30,0)$ & 6  & 11 & 27  & 6937 & 0.015 & 0.017 & 1.374 \\
-5  & $(1,1)$ & $(30,0)$ & 27 & 41 & 123 & 2146 & 0.058 & 0.072 & 0.422 \\
-10 & $(1,0)$ & $(40,0)$ & 14 & 18 & 32  & 4105 & 0.027 & 0.030 & 0.728 \\
+21 & $(2,1)$ & $(30,0)$ & 13 & 19 & 73  & 6589 & 0.019 & 0.025 & 0.809 \\
+21 & $(2,1)$ & $(40,0)$ & 17 & 29 & 112  & 8950 & 0.028 & 0.043 & 1.126 \\
+6 & $(3,-1)$ & $(30,0)$ & 6 & 11 & 27  & 6937 & 0.010 & 0.011 & 0.831 \\
+5 & $(1,1)$ & $(30,0)$ & 27 & 41 & 123  & 2146 & 0.038 & 0.049 & 0.284 \\
+10 & $(1,0)$ & $(40,0)$ & 14 & 18 & 32  & 4105 & 0.014 & 0.016 & 0.444 \\
 \bottomrule
 \end{tabular}
 \caption{Weighted-search benchmarks. The structural columns report distinct weighted values and
@@ -1367,16 +1360,17 @@ box. Second, the table reports the quantity that actually matters algorithmicall
 of distinct weighted values. The total number of accepted roots is exactly twice this number by
 Lemma~\ref{lem:two-to-one}, but the representability layer does not need to store both signs.
 
-\begin{figure}[H]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=0.82\textwidth]{enumeration_candidates.pdf}
 \caption{Canonical candidate counts on a logarithmic scale for the weighted-search benchmarks of Table~\ref{tab:enum}. The exact row search consistently stays below the sharp-box baseline and far below the deliberately crude box.}
+\Description{Bar chart on a logarithmic vertical axis comparing exact row enumeration, sharp box, and crude box candidate counts. The exact row bars are lowest in every displayed benchmark.}
 \label{fig:enumplot}
 \end{figure}
 
 Figure~\ref{fig:enumplot} visualises the same structural separation on a logarithmic scale. This is the software-facing interpretation of the ellipse-sensitive enumeration theorem: the exact row method improves the right candidate count, not merely the wall-clock time.
 
-\begin{table}[H]
+\begin{table}[tbp]
 \centering
 \tiny
 \setlength{\tabcolsep}{2.0pt}
@@ -1384,10 +1378,10 @@ Figure~\ref{fig:enumplot} visualises the same structural separation on a logarit
 \toprule
 $D$ & coeffs & $\alpha$ & ord & $|\cS_{a_i}(\alpha)|$ & DP states & left & right & pre & DPc & DPt & MITMc & MITt \\
 \midrule
-10 & $[(1,0),(4,1)]$ & $(18,2)$ & $[1,0]$ & $[1,5]$ & $[2,11]$ & 2 & 6 & 0.036 & 0.010 & 0.048 & 0.008 & 0.045 \\
-5  & \shortstack[l]{$[(1,0),(1,0),$\\$(1,0)]$} & $(15,1)$ & $[0,1,2]$ & \shortstack[l]{$[13,13,$\\$13]$} & \shortstack[l]{$[14,61,$\\$108]$} & 14 & 61 & 0.041 & 0.650 & 0.704 & 0.149 & 0.197 \\
-21 & \shortstack[l]{$[(2,1),(1,0),$\\$(1,0),(1,0)]$} & $(30,0)$ & \shortstack[l]{$[1,2,$\\$3,0]$} & \shortstack[l]{$[12,12,$\\$12,13]$} & \shortstack[l]{$[13,60,$\\$131,195]$} & 60 & 95 & 0.079 & 1.723 & 1.806 & 0.260 & 0.343 \\
-13 & \shortstack[l]{$[(1,0),(2,1),$\\$(2,1),(1,0)]$} & $(18,0)$ & \shortstack[l]{$[1,2,$\\$0,3]$} & \shortstack[l]{$[5,5,$\\$9,9]$} & \shortstack[l]{$[6,15,$\\$49,84]$} & 15 & 35 & 0.070 & 0.475 & 0.481 & 0.111 & 0.165 \\
+10 & $[(1,0),(4,1)]$ & $(18,2)$ & $[1,0]$ & $[1,5]$ & $[2,11]$ & 2 & 6 & 0.023 & 0.007 & 0.030 & 0.006 & 0.029 \\
+5 & \shortstack[l]{$[(1,0),(1,0),$\\$(1,0)]$} & $(15,1)$ & \shortstack[l]{$[0,1,$\\$2]$} & \shortstack[l]{$[13,13,$\\$13]$} & \shortstack[l]{$[14,61,$\\$108]$} & 14 & 61 & 0.030 & 0.421 & 0.451 & 0.109 & 0.140 \\
+21 & \shortstack[l]{$[(2,1),(1,0),$\\$(1,0),(1,0)]$} & $(30,0)$ & \shortstack[l]{$[1,2,$\\$3,0]$} & \shortstack[l]{$[12,12,$\\$12,13]$} & \shortstack[l]{$[13,60,$\\$131,195]$} & 60 & 95 & 0.059 & 1.114 & 1.180 & 0.181 & 0.240 \\
+13 & \shortstack[l]{$[(1,0),(2,1),$\\$(2,1),(1,0)]$} & $(18,0)$ & \shortstack[l]{$[1,2,$\\$0,3]$} & \shortstack[l]{$[5,5,$\\$9,9]$} & \shortstack[l]{$[6,15,$\\$49,84]$} & 15 & 35 & 0.044 & 0.289 & 0.328 & 0.077 & 0.117 \\
 \bottomrule
 \end{tabularx}
 \caption{Representability benchmarks. The ``ord'' column records the internal coefficient order used
@@ -1401,34 +1395,35 @@ construction. The ``DPc'' and ``MITMc'' entries measure only the combination lay
 and ``MITt'' are the full end-to-end routines. This is why the meet-in-the-middle speedup in the last
 three examples remains visible even after the shared preprocessing is included.
 
-\begin{table}[H]
+\begin{table}[tbp]
 \centering
 \scriptsize
 \begin{tabular}{c c c c r r r r}
 \toprule
 $D$ & $\alpha$ & ord & $|\prod_i V_i(\alpha)|$ & pre & DPt & MITt & generic \\
 \midrule
-10 & $(18,2)$ & $[1,0]$ & 12 & 0.027 & 0.034 & 0.033 & 0.029 \\
-5  & $(15,1)$ & $[0,1,2]$ & 2744 & 0.036 & 0.512 & 0.140 & 0.846 \\
-21 & $(30,0)$ & $[1,2,3,0]$ & 30758 & 0.078 & 1.346 & 0.265 & 12.490 \\
-13 & $(18,0)$ & $[1,2,0,3]$ & 3600 & 0.049 & 0.406 & 0.135 & 1.422 \\
+10 & $(18,2)$ & $[1,0]$ & 12 & 0.027 & 0.034 & 0.034 & 0.031 \\
+5 & $(15,1)$ & $[0,1,2]$ & 2744 & 0.034 & 0.481 & 0.151 & 0.717 \\
+21 & $(30,0)$ & $[1,2,3,0]$ & 30758 & 0.068 & 1.259 & 0.242 & 9.727 \\
+13 & $(18,0)$ & $[1,2,0,3]$ & 3600 & 0.046 & 0.343 & 0.127 & 1.203 \\
 \bottomrule
 \end{tabular}
 \caption{Surrogate general-purpose exact baseline for single-target representability. The ``generic'' column expands the full Cartesian product of the value lists after the same exact preprocessing used by DP and meet-in-the-middle.}
 \label{tab:generic}
 \end{table}
 
-Table~\ref{tab:generic} is the TOMS-facing comparison point. The artifact does not depend on an
+Table~\ref{tab:generic} is the TOMS-facing comparison point. The artefact does not depend on an
 external CAS, so instead of timing SageMath or PARI/GP directly we bundle a reproducible generic
 exact baseline that mirrors the post-enumeration task a general-purpose system would still have to
 solve: given the exact weighted-value sets, search their full Cartesian product for a representation.
 This keeps the comparison portable while still showing the algorithmic advantage of reusing partial
 sums. The structural column $|\prod_i V_i(\alpha)|$ records the raw search size of that baseline.
 
-\begin{figure}[H]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=0.74\textwidth]{generic_baseline_runtime.pdf}
 \caption{End-to-end runtimes for constructive DP, meet-in-the-middle, and the bundled generic exact baseline of Table~\ref{tab:generic}. The specialised solvers exploit partial-sum reuse, whereas the generic baseline expands the full Cartesian product of the value lists.}
+\Description{Log-scale bar chart comparing dynamic programming, meet-in-the-middle, and generic baseline runtimes. The generic baseline grows fastest on larger examples.}
 \label{fig:generic}
 \end{figure}
 
@@ -1448,7 +1443,7 @@ hence the explicit representation
 This illustrates that the implementation is genuinely constructive: it returns actual roots, not
 merely a yes/no answer.
 
-\begin{table}[H]
+\begin{table}[tbp]
 \centering
 \tiny
 \setlength{\tabcolsep}{2.0pt}
@@ -1456,9 +1451,9 @@ merely a yes/no answer.
 \toprule
 $D$ & coefficients & $\alpha$ & ord & original states & optimised states & pre$_\mathrm{unc}$ & pre$_\mathrm{c}$ & DP$_\mathrm{orig}$ & DP$_\mathrm{opt}$ \\
 \midrule
-10 & $[(1,0),(4,1)]$ & $(18,2)$ & $[1,0]$ & $[6,11]$ & $[2,11]$ & 0.035 & 0.034 & 0.051 & 0.047 \\
-13 & \shortstack[l]{$[(1,0),(2,1),$\\$(2,1),(1,0)]$} & $(18,0)$ & \shortstack[l]{$[1,2,$\\$0,3]$} & \shortstack[l]{$[10,31,$\\$49,84]$} & \shortstack[l]{$[6,15,$\\$49,84]$} & 0.107 & 0.057 & 0.603 & 0.523 \\
-21 & \shortstack[l]{$[(2,1),(1,0),$\\$(1,0),(1,0)]$} & $(30,0)$ & \shortstack[l]{$[1,2,$\\$3,0]$} & \shortstack[l]{$[14,95,$\\$190,195]$} & \shortstack[l]{$[13,60,$\\$131,195]$} & 0.172 & 0.079 & 2.654 & 1.873 \\
+10 & $[(1,0),(4,1)]$ & $(18,2)$ & $[1,0]$ & $[6,11]$ & $[2,11]$ & 0.020 & 0.019 & 0.029 & 0.027 \\
+13 & \shortstack[l]{$[(1,0),(2,1),$\\$(2,1),(1,0)]$} & $(18,0)$ & \shortstack[l]{$[1,2,$\\$0,3]$} & \shortstack[l]{$[10,31,$\\$49,84]$} & \shortstack[l]{$[6,15,$\\$49,84]$} & 0.083 & 0.033 & 0.365 & 0.313 \\
+21 & \shortstack[l]{$[(2,1),(1,0),$\\$(1,0),(1,0)]$} & $(30,0)$ & \shortstack[l]{$[1,2,$\\$3,0]$} & \shortstack[l]{$[14,95,$\\$190,195]$} & \shortstack[l]{$[13,60,$\\$131,195]$} & 0.088 & 0.046 & 1.499 & 1.038 \\
 \bottomrule
 \end{tabularx}
 \caption{Coefficient-order and repeated-coefficient optimisation. The timing columns record,
@@ -1475,23 +1470,24 @@ occurs more than once. The second row is typical: the two repeated coefficients 
 preprocessed only once, and the internal ordering cuts the first two DP layers from $[10,31]$ to
 $[6,15]$.
 
-\begin{figure}[H]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=0.72\textwidth]{optimisation_runtime.pdf}
 \caption{End-to-end constructive DP runtimes before and after internal coefficient reordering and repeated-coefficient caching for the optimisation benchmarks of Table~\ref{tab:opt}.}
+\Description{Bar chart comparing original and optimised constructive dynamic-programming runtimes. The optimised variant is lower in each benchmark.}
 \label{fig:optplot}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}[tbp]
 \centering
 \tiny
 \begin{tabular}{clrrrrcc}
 \toprule
 $D$ & coefficients & $B$ & represented & truants & $|\cW_i(B)|-1$ & batched states & times (ms) \\
 \midrule
-5  & $[(1,0),(1,0),(1,0)]$ & 10 & 25 & 0  & $[7,7,7]$ & $[8,20,26]$ & $0.019/0.115/0.192/1.234$ \\
-10 & $[(1,0),(4,1)]$       & 18 & 6  & 21 & $[1,3]$   & $[2,7]$     & $0.020/0.006/0.069/1.058$ \\
-21 & $[(2,1),(1,0),(1,0)]$ & 16 & 23 & 7  & $[4,6,6]$ & $[5,18,24]$ & $0.028/0.079/0.172/1.748$ \\
+5 & $[(1,0),(1,0),(1,0)]$ & 10 & 25 & 0 & $[7,7,7]$ & $[8,20,26]$ & $0.010/0.065/0.112/0.685$ \\
+10 & $[(1,0),(4,1)]$ & 18 & 6 & 21 & $[1,3]$ & $[2,7]$ & $0.011/0.004/0.043/0.604$ \\
+21 & $[(2,1),(1,0),(1,0)]$ & 16 & 23 & 7 & $[4,6,6]$ & $[5,18,24]$ & $0.016/0.047/0.105/0.998$ \\
 \bottomrule
 \end{tabular}
 \caption{Batched bounded search versus per-target recomputation. The timing column lists, in order,
@@ -1507,14 +1503,15 @@ proof predicts. The timing column shows the important comparison: the full batch
 routine is already substantially faster than solving each target separately, even at these modest
 bounds.
 
-\begin{figure}[H]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=0.74\textwidth]{bounded_runtime.pdf}
 \caption{End-to-end runtimes for the batched bounded routine and naive per-target recomputation in Table~\ref{tab:bounded}. The important comparison is the full batched end-to-end runtime versus the full naive end-to-end runtime.}
+\Description{Bar chart comparing batched bounded search with naive per-target recomputation. Batched search is lower for all displayed cases.}
 \label{fig:boundedplot}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}[tbp]
 \centering
 \scriptsize
 \begin{tabularx}{\textwidth}{c l c X}
@@ -1588,62 +1585,8 @@ computations of the type considered by Kala--Kr\'asensk\'y--Romeo \cite{KKR}. Fi
 DP and meet-in-the-middle state-count bounds are purely combinatorial; it would be interesting to
 sharpen them by exploiting additional multiplicative structure inside $\OD^+$.
 
-\begin{thebibliography}{99}
 
-\bibitem{FinckePohst}
-U.~Fincke and M.~E.~Pohst,
-\emph{Improved methods for calculating vectors of short length in a lattice, including a complexity analysis},
-Math. Comp. \textbf{44} (1985), 463--471.
-
-\bibitem{GruberLekkerkerker}
-P.~M.~Gruber and C.~G.~Lekkerkerker,
-\emph{Geometry of Numbers}, 2nd ed., North-Holland, Amsterdam, 1987.
-
-\bibitem{KalaSurvey}
-V.~Kala,
-\emph{Universal quadratic forms and indecomposables in number fields},
-Commun. Math. \textbf{31} (2023), no.~2, 81--114.
-
-\bibitem{KKK}
-V.~Kala, K.~Kramer, and J.~Kr\'asensk\'y,
-\emph{Kitaoka's conjecture and sums of squares},
-arXiv:2510.19545.
-
-\bibitem{KKR}
-V.~Kala, J.~Kr\'asensk\'y, and G.~Romeo,
-\emph{Universality criterion sets for quadratic forms over number fields},
-arXiv:2410.22507.
-
-\bibitem{KaniaQSOS}
-T.~Kania,
-\emph{quadratic\_sos: Exact integral lengths of sums of squares in real quadratic rings},
-software repository, 2026. \url{https://github.com/tomaszkania/quadratic_sos}.
-
-\bibitem{KopSq}
-P.~Koprowski,
-\emph{Solving sums of squares in global fields},
-Proc. ISSAC 2022, 319--324; see also arXiv:2111.08558.
-
-\bibitem{KopIso}
-P.~Koprowski,
-\emph{Isotropic vectors over global fields},
-Math. Comp. \textbf{95} (2026), 1541--1567.
-
-\bibitem{KopCz}
-P.~Koprowski and A.~Czoga{\l}a,
-\emph{Computing with quadratic forms over number fields},
-J. Symbolic Comput. \textbf{89} (2018), 129--145.
-
-\bibitem{KopRoth}
-P.~Koprowski and B.~Rothkegel,
-\emph{The anisotropic part of a quadratic form over a number field},
-J. Symbolic Comput. \textbf{115} (2023), 39--52.
-
-\bibitem{Raska}
-M.~Ra\v ska,
-\emph{Representing multiples of $m$ in real quadratic fields as sums of squares},
-J. Number Theory \textbf{244} (2023), 24--41.
-
-\end{thebibliography}
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
 
 \end{document}
