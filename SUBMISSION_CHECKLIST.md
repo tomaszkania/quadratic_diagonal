@@ -17,7 +17,7 @@ The following checklist is intended for the editor and referees.
 ## Software component
 
 - [x] Installable Python package in `src/`.
-- [x] Version bumped to 0.2.0 in package metadata and citation metadata.
+- [x] Version bumped to 1.1.0 in package metadata and citation metadata.
 - [x] No runtime dependencies outside the Python standard library for the core routines.
 - [x] MIT licence and citation metadata supplied.
 - [x] Non-interactive smoke-test driver: `python scripts/run_all_checks.py`.

@@ -1,46 +1,56 @@
 # TOMS Algorithm-paper software component
 
-Version: **0.2.0**.
+Package: **quadratic_diagonal 1.1.0**  
+Purpose: exact constructive diagonal representability over maximal real quadratic orders.
 
-This repository is intended to be submitted as the software component of a TOMS Algorithm paper.
-The paper PDF is submitted separately; the `paper/` directory also contains the ACM `acmart`
-LaTeX source, BibTeX file, generated figures, and a locally compiled PDF for convenience.
-The directory `submission/` contains a generated convenience archive with the same software
-component.
+The article PDF and software component are supplied as separate submission files. The
+software ZIP produced by `scripts/make_submission_archive.py` contains exactly one
+top-level directory, the source package, a universal wheel, tests, examples,
+reproduction drivers, deterministic validation summaries, documentation, an executed
+notebook, licence and citation metadata, and per-file SHA-256 checksums.
 
-## Required commands
-
-The following commands require no interactive input.
+## Offline core check
 
 ```bash
-python -m pip install -e .[repro]
+python -m pip install --no-index dist/*.whl
+quadratic-diagonal represent --D 21 --alpha 30,0 \
+  --coeff 2,1 --coeff 1,0 --coeff 1,0 --coeff 1,0 \
+  --method mitm --compact
+```
+
+The JSON result contains an explicit root tuple and `"certified": true`.
+
+## Referee workflow
+
+```bash
+python -m pip install --no-build-isolation -e .[repro]
 python scripts/run_all_checks.py
 ```
 
-The smoke-test driver runs the regression suite, selected reproduction scripts, and validation
-checks. Timing columns are treated as machine-dependent; deterministic structural counts are
-regenerated from the package code.
+The complete validation and notebook path is:
 
-## Contents
+```bash
+python scripts/run_all_checks.py --full --with-notebook
+```
 
-- `src/`: installable Python package.
-- `tests/`: regression and brute-force cross-checks.
-- `scripts/run_all_checks.py`: non-interactive smoke-test driver.
-- `scripts/reproduce_tables.py`: regenerates table data and figures.
-- `scripts/validation_sweep.py`: bounded validation driver.
-- `scripts/make_submission_archive.py`: builds the TOMS software-component archive.
-- `data/`: generated deterministic data and timing summaries.
-- `notebooks/`: executed paper-illustration notebook.
-- `paper/`: ACM manuscript source, BibTeX references, generated figures, and PDF.
+## Independent validation supplied
+
+The full bounded corpus covers 26 squarefree fields through `D = 41` and records:
+
+- 2,998 weighted-search comparisons against independent sharp-box enumeration;
+- 2,512 DP/MITM/direct-sumset representability comparisons;
+- 2,452 independently verified constructive certificates;
+- 104 batched bounded-search comparisons;
+- zero discrepancies.
+
+The machine-readable summary is `data/validation_summary.json`.
 
 ## Portability
 
-The core package uses only the Python standard library and arbitrary-precision integers. The
-optional `repro` extra installs `pytest`, `matplotlib`, `jupyter`, and `nbconvert` for tests,
-figures, and notebooks. The package metadata declares Python 3.10 or later; this bundle was
-smoke-tested with Python 3.13.
+The core package has no runtime dependency outside the Python standard library and
+uses arbitrary-precision integers. Python 3.10--3.13 is supported. CI is configured
+for Linux, macOS and Windows. Optional reproduction dependencies are confined to
+pytest, Matplotlib, Jupyter and nbconvert. See `docs/PORTABILITY.md`.
 
-## Expected outputs
-
-A successful smoke test ends by writing `data/run_all_checks_summary.txt` and printing a final
-`OK` line. The number of regression tests is recorded in that summary file.
+Timing values depend on hardware and interpreter state. All mathematical certificates,
+state counts and validation totals are deterministic.

@@ -1,0 +1,162 @@
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{11}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{} and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showURL}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showURL #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[Fincke and Pohst(1985)]%
+        {FinckePohst}
+\bibfield{author}{\bibinfo{person}{Ulrich Fincke} {and}
+  \bibinfo{person}{Michael~E. Pohst}.} \bibinfo{year}{1985}\natexlab{}.
+\newblock \showarticletitle{Improved methods for calculating vectors of short
+  length in a lattice, including a complexity analysis}.
+\newblock \bibinfo{journal}{\emph{Math. Comp.}} \bibinfo{volume}{44},
+  \bibinfo{number}{170} (\bibinfo{year}{1985}), \bibinfo{pages}{463--471}.
+\newblock
+
+
+\bibitem[Gruber and Lekkerkerker(1987)]%
+        {GruberLekkerkerker}
+\bibfield{author}{\bibinfo{person}{Peter~M. Gruber} {and}
+  \bibinfo{person}{Cornelis~G. Lekkerkerker}.} \bibinfo{year}{1987}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Geometry of Numbers} (\bibinfo{edition}{2}
+  ed.)}.
+\newblock \bibinfo{publisher}{North-Holland}, \bibinfo{address}{Amsterdam}.
+\newblock
+
+
+\bibitem[Kala(2023)]%
+        {KalaSurvey}
+\bibfield{author}{\bibinfo{person}{V{\'i}t{\v e}zslav Kala}.}
+  \bibinfo{year}{2023}\natexlab{}.
+\newblock \showarticletitle{Universal quadratic forms and indecomposables in
+  number fields}.
+\newblock \bibinfo{journal}{\emph{Communications in Mathematics}}
+  \bibinfo{volume}{31}, \bibinfo{number}{2} (\bibinfo{year}{2023}),
+  \bibinfo{pages}{81--114}.
+\newblock
+
+
+\bibitem[Kala et~al\mbox{.}(2025)]%
+        {KKK}
+\bibfield{author}{\bibinfo{person}{V{\'i}t{\v e}zslav Kala},
+  \bibinfo{person}{Krist{\'y}na Kramer}, {and} \bibinfo{person}{Jakub
+  Kr{\'a}sensk{\'y}}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \bibinfo{title}{Kitaoka's conjecture and sums of squares}.
+\newblock
+\showeprint[arxiv]{2510.19545}~[math.NT]
+
+
+\bibitem[Kala et~al\mbox{.}(2024)]%
+        {KKR}
+\bibfield{author}{\bibinfo{person}{V{\'i}t{\v e}zslav Kala},
+  \bibinfo{person}{Jakub Kr{\'a}sensk{\'y}}, {and} \bibinfo{person}{Gianluca
+  Romeo}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \bibinfo{title}{Universality criterion sets for quadratic forms over
+  number fields}.
+\newblock
+\showeprint[arxiv]{2410.22507}~[math.NT]
+
+
+\bibitem[Kania(2026)]%
+        {KaniaQSOS}
+\bibfield{author}{\bibinfo{person}{Tomasz Kania}.}
+  \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{{quadratic\_sos}: Exact integral lengths of sums of
+  squares in real quadratic rings}.
+\newblock \bibinfo{howpublished}{Software repository}.
+\newblock
+\urldef\tempurl%
+\url{https://github.com/tomaszkania/quadratic_sos}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Koprowski(2022)]%
+        {KopSq}
+\bibfield{author}{\bibinfo{person}{Przemys{\l}aw Koprowski}.}
+  \bibinfo{year}{2022}\natexlab{}.
+\newblock \showarticletitle{Solving sums of squares in global fields}. In
+  \bibinfo{booktitle}{\emph{Proceedings of the 2022 International Symposium on
+  Symbolic and Algebraic Computation}} \emph{(\bibinfo{series}{ISSAC '22})}.
+  \bibinfo{publisher}{Association for Computing Machinery},
+  \bibinfo{address}{New York, NY, USA}, \bibinfo{pages}{319--324}.
+\newblock
+
+
+\bibitem[Koprowski(2026)]%
+        {KopIso}
+\bibfield{author}{\bibinfo{person}{Przemys{\l}aw Koprowski}.}
+  \bibinfo{year}{2026}\natexlab{}.
+\newblock \showarticletitle{Isotropic vectors over global fields}.
+\newblock \bibinfo{journal}{\emph{Math. Comp.}} \bibinfo{volume}{95},
+  \bibinfo{number}{359} (\bibinfo{year}{2026}), \bibinfo{pages}{1541--1567}.
+\newblock
+\href{https://doi.org/10.1090/mcom/4165}{doi:\nolinkurl{10.1090/mcom/4165}}
+
+
+\bibitem[Koprowski and Czoga{\l}a(2018)]%
+        {KopCz}
+\bibfield{author}{\bibinfo{person}{Przemys{\l}aw Koprowski} {and}
+  \bibinfo{person}{Alfred Czoga{\l}a}.} \bibinfo{year}{2018}\natexlab{}.
+\newblock \showarticletitle{Computing with quadratic forms over number fields}.
+\newblock \bibinfo{journal}{\emph{Journal of Symbolic Computation}}
+  \bibinfo{volume}{89} (\bibinfo{year}{2018}), \bibinfo{pages}{129--145}.
+\newblock
+
+
+\bibitem[Koprowski and Rothkegel(2023)]%
+        {KopRoth}
+\bibfield{author}{\bibinfo{person}{Przemys{\l}aw Koprowski} {and}
+  \bibinfo{person}{Bernd Rothkegel}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \showarticletitle{The anisotropic part of a quadratic form over a
+  number field}.
+\newblock \bibinfo{journal}{\emph{Journal of Symbolic Computation}}
+  \bibinfo{volume}{115} (\bibinfo{year}{2023}), \bibinfo{pages}{39--52}.
+\newblock
+
+
+\bibitem[Ra{\v s}ka(2023)]%
+        {Raska}
+\bibfield{author}{\bibinfo{person}{Mat{\v e}j Ra{\v s}ka}.}
+  \bibinfo{year}{2023}\natexlab{}.
+\newblock \showarticletitle{Representing multiples of {$m$} in real quadratic
+  fields as sums of squares}.
+\newblock \bibinfo{journal}{\emph{Journal of Number Theory}}
+  \bibinfo{volume}{244} (\bibinfo{year}{2023}), \bibinfo{pages}{24--41}.
+\newblock
+
+
+\end{thebibliography}

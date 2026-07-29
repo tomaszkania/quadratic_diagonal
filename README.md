@@ -2,7 +2,7 @@
 
 **Exact diagonal representability over real quadratic orders**
 
-Version: **0.2.0** (TOMS submission refresh)
+Version: **1.1.0** (TOMS submission refresh)
 
 Public repository (intended submission/software URL):
 <https://github.com/tomaszkania/quadratic_diagonal>
@@ -47,6 +47,7 @@ The central package entry points are:
 - `diagonal_representability_mitm`
 - `batched_bounded_representables`
 - `bounded_truants_batched`
+- `verify_representation`
 
 ## Repository layout
 
@@ -63,9 +64,19 @@ The central package entry points are:
 
 ## Installation
 
+A prebuilt universal wheel is included in `dist/` for offline referee use:
+
+```bash
+python -m pip install --no-index dist/*.whl
+```
+
+For an editable source-tree installation, use:
+
 ```bash
 pip install -e .
 ```
+
+If the build environment is offline, add `--no-build-isolation` to the editable-install command.
 
 Optional extras:
 
@@ -86,6 +97,18 @@ alpha = (30, 0)
 result = diagonal_representability_dp(O, coeffs, alpha)
 print(result.represented)
 print(result.roots)
+```
+
+## Command-line interface
+
+The installable package provides deterministic JSON commands:
+
+```bash
+quadratic-diagonal enumerate --D 10 --coeff 1,0 --alpha 18,2 --compact
+quadratic-diagonal represent --D 21 --alpha 30,0 \
+  --coeff 2,1 --coeff 1,0 --coeff 1,0 --coeff 1,0 --method mitm --compact
+quadratic-diagonal bounded-truants --D 10 --coeff 1,0 --coeff 4,1 \
+  --trace-bound 18 --compact
 ```
 
 ## Software availability and reproducibility

@@ -1,4 +1,4 @@
-pytest
-matplotlib
-jupyter
-nbconvert
+pytest>=8,<10
+matplotlib>=3.8
+jupyter>=1.0
+nbconvert>=7.14

@@ -462,3 +462,76 @@ def test_generic_baseline_benchmark_agrees_with_specialised_solvers() -> None:
         assert row.cartesian_product_size > 0
         assert row.generic_total_ms >= row.preprocessing_ms
 
+
+
+def test_verify_representation_and_cli(capsys) -> None:
+    """Constructive output is independently certified and exposed by the CLI."""
+    from quadratic_diagonal import verify_representation
+    from quadratic_diagonal.cli import main
+
+    order = RealQuadraticOrder(21)
+    coeffs = [(2, 1), (1, 0), (1, 0), (1, 0)]
+    alpha = (30, 0)
+    result = diagonal_representability_dp(order, coeffs, alpha)
+    assert result.represented and result.roots is not None
+    assert verify_representation(order, coeffs, alpha, result.roots)
+    assert not verify_representation(order, coeffs, alpha, [(0, 0)] * len(coeffs))
+
+    status = main([
+        "represent", "--D", "21", "--alpha", "30,0",
+        "--coeff", "2,1", "--coeff", "1,0", "--coeff", "1,0", "--coeff", "1,0",
+        "--method", "mitm", "--compact",
+    ])
+    assert status == 0
+    output = capsys.readouterr().out
+    assert '"represented": true' in output
+    assert '"certified": true' in output
+
+
+def test_module_cli_enumeration(capsys) -> None:
+    """The machine-readable enumeration command exposes deterministic counts."""
+    from quadratic_diagonal.cli import main
+
+    status = main([
+        "enumerate", "--D", "10", "--coeff", "1,0", "--alpha", "18,2", "--compact",
+    ])
+    assert status == 0
+    output = capsys.readouterr().out
+    assert '"distinct_values": 5' in output
+
+
+def test_verify_representation_rejects_length_mismatch() -> None:
+    """Certificate verification rejects malformed witness tuples."""
+    from quadratic_diagonal import verify_representation
+
+    order = RealQuadraticOrder(5)
+    try:
+        verify_representation(order, [(1, 0)], (1, 0), [])
+    except ValueError as exc:
+        assert "same length" in str(exc)
+    else:
+        raise AssertionError("A malformed certificate should be rejected")
+
+
+def test_balancing_uses_half_open_fundamental_interval() -> None:
+    """The upper endpoint is shifted to the included lower endpoint exactly."""
+    for D in (2, 5, 10, 13):
+        order = RealQuadraticOrder(D)
+        unit = order.balanced_totally_positive_unit()
+        beta, scale = order.balance_by_unit_square(unit)
+        assert beta == order.conjugate(unit)
+        assert scale == unit
+        assert order.mul(beta, order.sqr(scale)) == unit
+
+
+def test_balancing_large_pell_orbit_is_exact() -> None:
+    """Fast exponent search balances a large Pell orbit and reconstructs it."""
+    for D in (5, 10, 13):
+        order = RealQuadraticOrder(D)
+        unit = order.balanced_totally_positive_unit()
+        exponent = 128
+        alpha = order.pow(order.sqr(unit), exponent)
+        beta, scale = order.balance_by_unit_square(alpha)
+        assert beta == order.one
+        assert scale == order.pow(unit, exponent)
+        assert order.mul(beta, order.sqr(scale)) == alpha

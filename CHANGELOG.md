@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 - TOMS submission refresh
+## 1.1.0 - TOMS submission refresh
 
 - Converted the manuscript to ACM `acmart` single-column review format for TOMS.
 - Added ACM CCS descriptors, keywords, figure descriptions, and BibTeX references.

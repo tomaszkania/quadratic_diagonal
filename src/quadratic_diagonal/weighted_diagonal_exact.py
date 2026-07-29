@@ -29,7 +29,7 @@ from dataclasses import dataclass
 from itertools import product
 from statistics import median
 from time import perf_counter
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
 Pair = Tuple[int, int]
 
@@ -439,7 +439,17 @@ class RealQuadraticOrder:
         return (x, y)
 
     def balance_by_unit_square(self, x: Pair) -> Tuple[Pair, Pair]:
-        """Balance a totally positive element by even powers of a positive unit.
+        """Balance a totally positive element by a square of a positive unit.
+
+        The method returns the unique representative in the half-open
+        fundamental interval
+
+        ``sigma_1(u)^(-2) <= sigma_1(beta) / sigma_2(beta) < sigma_1(u)^2``,
+
+        where ``u`` is the positive norm-one Pell unit returned by
+        :meth:`balanced_totally_positive_unit`.  The required exponent is found
+        by exponential search followed by an exact binary-greedy refinement,
+        rather than by taking one Pell-unit-square step at a time.
 
         Parameters
         ----------
@@ -450,47 +460,115 @@ class RealQuadraticOrder:
         -------
         tuple[tuple[int, int], tuple[int, int]]
             A pair ``(beta, scale)`` with ``beta = x * u^(2k)`` and
-            ``scale = u^(-k)`` for a suitable integer ``k``.
+            ``scale = u^(-k)`` for a suitable integer ``k``.  Consequently,
+            multiplying every root of a representation of ``beta`` by
+            ``scale`` yields a representation of ``x``.
+
+        Raises
+        ------
+        ValueError
+            If ``x`` is not totally positive.
         """
         if not self.is_totally_positive(x):
             raise ValueError("Only totally positive elements can be balanced")
+
         unit = self.balanced_totally_positive_unit()
         unit_inv = self.conjugate(unit)
         unit_sq = self.sqr(unit)
         unit_sq_inv = self.sqr(unit_inv)
-        beta = x
-        k = 0
-        while self._ratio_exceeds_square(beta, unit_sq):
-            beta = self.mul(beta, unit_sq_inv)
-            k -= 1
-        while self._inverse_ratio_exceeds_square(beta, unit_sq):
-            beta = self.mul(beta, unit_sq)
-            k += 1
-        if k >= 0:
-            scale = self.pow(unit_inv, k)
+
+        if self._ratio_at_least_square(x, unit_sq):
+            beta, steps = self._minimal_balance_shift(
+                x,
+                unit_sq_inv,
+                lambda value: self._ratio_at_least_square(value, unit_sq),
+            )
+            scale = self.pow(unit, steps)
+        elif self._inverse_ratio_exceeds_square(x, unit_sq):
+            beta, steps = self._minimal_balance_shift(
+                x,
+                unit_sq,
+                lambda value: self._inverse_ratio_exceeds_square(value, unit_sq),
+            )
+            scale = self.pow(unit_inv, steps)
         else:
-            scale = self.pow(unit, -k)
+            beta = x
+            scale = self.one
+
+        if self._ratio_at_least_square(beta, unit_sq) or self._inverse_ratio_exceeds_square(beta, unit_sq):
+            raise RuntimeError("Internal error: unit-square balancing did not reach the fundamental interval")
         return beta, scale
 
-    def _ratio_exceeds_square(self, x: Pair, unit_sq: Pair) -> bool:
-        """Return whether ``sigma_1(x) / sigma_2(x)`` exceeds ``sigma_1(unit_sq)``.
+    def _minimal_balance_shift(
+        self,
+        x: Pair,
+        step: Pair,
+        violates: Callable[[Pair], bool],
+    ) -> Tuple[Pair, int]:
+        """Apply the smallest positive power of ``step`` leaving a monotone region.
 
         Parameters
         ----------
         x : tuple[int, int]
-            Totally positive element.
-        unit_sq : tuple[int, int]
-            Square of a positive norm-one unit.
+            Starting element, assumed to satisfy ``violates(x)``.
+        step : tuple[int, int]
+            Unit-square step in the direction that decreases the violation.
+        violates : callable
+            Monotone exact predicate which is initially true and eventually
+            false along ``x * step**n``.
 
         Returns
         -------
-        bool
-            Whether the first-embedding ratio is too large.
+        tuple[tuple[int, int], int]
+            The first non-violating element and the positive number of applied
+            steps.
+
+        Notes
+        -----
+        Exponential search builds ``step**(2**j)`` until an upper exponent is
+        found.  A descending greedy pass then recovers the largest still
+        violating exponent, so only ``O(log n)`` exact ring operations and
+        comparisons are needed for a shift of size ``n``.
+        """
+        if not violates(x):
+            return x, 0
+
+        powers: List[Pair] = [step]
+        while violates(self.mul(x, powers[-1])):
+            powers.append(self.sqr(powers[-1]))
+
+        beta = x
+        steps = 0
+        for exponent_index in range(len(powers) - 1, -1, -1):
+            trial = self.mul(beta, powers[exponent_index])
+            if violates(trial):
+                beta = trial
+                steps += 1 << exponent_index
+
+        beta = self.mul(beta, step)
+        steps += 1
+        if violates(beta):
+            raise RuntimeError("Internal error in exact balancing exponent search")
+        return beta, steps
+
+    def _ratio_at_least_square(self, x: Pair, unit_sq: Pair) -> bool:
+        """Return whether ``sigma_1(x) / sigma_2(x) >= sigma_1(unit_sq)``.
+
+        The non-strict upper test is essential because the chosen normal form
+        is half-open at its upper endpoint.
+        """
+        return self.sigma1_ge(x, self.mul(unit_sq, self.conjugate(x)))
+
+    def _ratio_exceeds_square(self, x: Pair, unit_sq: Pair) -> bool:
+        """Return whether ``sigma_1(x) / sigma_2(x) > sigma_1(unit_sq)``.
+
+        This strict helper is retained for diagnostics and backwards-compatible
+        internal use.  Balancing itself uses :meth:`_ratio_at_least_square`.
         """
         return self.sigma1_gt(x, self.mul(unit_sq, self.conjugate(x)))
 
     def _inverse_ratio_exceeds_square(self, x: Pair, unit_sq: Pair) -> bool:
-        """Return whether ``sigma_2(x) / sigma_1(x)`` exceeds ``sigma_1(unit_sq)``.
+        """Return whether ``sigma_2(x) / sigma_1(x) > sigma_1(unit_sq)``.
 
         Parameters
         ----------
@@ -502,7 +580,8 @@ class RealQuadraticOrder:
         Returns
         -------
         bool
-            Whether the inverse first-embedding ratio is too large.
+            Whether the inverse first-embedding ratio lies below the lower
+            endpoint of the balanced interval.
         """
         return self.sigma1_gt(self.conjugate(x), self.mul(unit_sq, x))
 
@@ -2295,8 +2374,9 @@ def benchmark_generic_baseline(
     The benchmark shares the same exact preprocessing stage as the specialised
     representability routines and then replaces the DP / meet-in-the-middle
     layer by explicit Cartesian-product search over the weighted value lists.
-    This yields a fully reproducible surrogate for a direct general-purpose CAS
-    workflow while keeping the artifact self-contained.
+    This yields a fully reproducible generic exact baseline while keeping the
+    artefact self-contained. It is not presented as a substitute for a direct
+    benchmark against any particular computer algebra system.
 
     Parameters
     ----------
@@ -2367,6 +2447,49 @@ def benchmark_generic_baseline(
         )
     return rows
 
+
+
+def verify_representation(
+    order: RealQuadraticOrder,
+    coeffs: Sequence[Pair],
+    alpha: Pair,
+    roots: Sequence[Pair],
+) -> bool:
+    """Verify a proposed diagonal representation exactly.
+
+    Parameters
+    ----------
+    order : RealQuadraticOrder
+        Ambient maximal order.
+    coeffs : sequence[tuple[int, int]]
+        Diagonal coefficients ``a_1, ..., a_r``.
+    alpha : tuple[int, int]
+        Target element.
+    roots : sequence[tuple[int, int]]
+        Proposed roots ``x_1, ..., x_r``.
+
+    Returns
+    -------
+    bool
+        ``True`` exactly when ``alpha = sum_i a_i x_i^2``.
+
+    Raises
+    ------
+    ValueError
+        If the coefficient and root sequences have different lengths.
+
+    Notes
+    -----
+    This routine is deliberately independent of the search and combination
+    layers. It is used by the command-line interface, tests, and validation
+    drivers to certify every constructive result before it is reported.
+    """
+    if len(coeffs) != len(roots):
+        raise ValueError("The coefficient and root sequences must have the same length")
+    total = order.zero
+    for coeff, root in zip(coeffs, roots):
+        total = order.add(total, order.mul(coeff, order.sqr(root)))
+    return total == alpha
 
 def format_pair(x: Pair) -> str:
     """Return a compact string representation of a coefficient pair.

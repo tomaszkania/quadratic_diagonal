@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quadratic-diagonal"
-version = "0.2.0"
+version = "1.1.0"
 description = "Exact diagonal representability over real quadratic rings"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -17,12 +17,14 @@ classifiers = [
   "Development Status :: 4 - Beta",
   "License :: OSI Approved :: MIT License",
   "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
   "Topic :: Scientific/Engineering :: Mathematics",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Typing :: Typed",
 ]
 
 [project.optional-dependencies]
@@ -36,5 +38,11 @@ Repository = "https://github.com/tomaszkania/quadratic_diagonal"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+quadratic_diagonal = ["py.typed"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[project.scripts]
+quadratic-diagonal = "quadratic_diagonal.cli:main"

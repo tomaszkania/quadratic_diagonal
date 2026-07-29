@@ -52,37 +52,39 @@
 \newcommand{\cT}{\mathcal{T}}
 \graphicspath{{figures/}}
 
-\title[Exact diagonal representability over real quadratic orders]{Exact diagonal representability over real quadratic orders via weighted trace-form enumeration}
+\title[\texttt{quadratic\_diagonal}: exact diagonal representability]{\texttt{quadratic\_diagonal}: Exact constructive diagonal representability over real quadratic orders}
 
 \author{Tomasz Kania}
 \authornote{IM CAS (RVO 67985840).}
 \affiliation{%
-  \institution{Institute of Mathematics, Czech Academy of Sciences}
-  \city{Prague}
+  \institution{Institute of Mathematics, Czech Academy of Sciences, \v{Z}itn\'a 25, 115 67 Prague 1}
+  \city{Prague 1}
   \country{Czech Republic}}
 \affiliation{%
-  \institution{Institute of Mathematics, Jagiellonian University}
+  \institution{Institute of Mathematics, Jagiellonian University, \L ojasiewicza 6, 30-348 Krak\'ow}
   \city{Krak\'ow}
   \country{Poland}}
 \email{tomasz.marcin.kania@gmail.com}
+\authorsaddresses{Tomasz Kania, Institute of Mathematics, Czech Academy of Sciences, \v{Z}itn\'a 25, 115 67 Prague 1, Czech Republic; Institute of Mathematics, Jagiellonian University, \L ojasiewicza 6, 30-348 Krak\'ow, Poland; \href{mailto:tomasz.marcin.kania@gmail.com}{tomasz.marcin.kania@gmail.com}}
 
 \begin{document}
 
 \begin{abstract}
-\texttt{quadratic\_diagonal} is a self-contained pure-Python reference package for exact
-constructive representability by diagonal quadratic lattices over maximal real quadratic orders.
-Given a squarefree radicand, totally positive diagonal coefficients, and a totally positive target,
-the software decides representability and returns an integral witness when one exists. The package
-implements weighted trace-form enumeration, dynamic-programming and meet-in-the-middle solvers,
-and batched bounded search for representable targets and bounded truants. The accompanying article
-proves the weighted discriminant identity, the distinct-value asymptotic, exact row-interval
-correctness, and pseudo-polynomial arithmetic-step bounds for fixed fields and fixed lattices. All
-comparisons in the core routines use integer trace and norm arithmetic; no floating-point boundary
-or ordering tests are used. The repository contains the installable package, non-interactive drivers,
-regression tests, validation sweeps, benchmark scripts, generated tables, performance plots, and an
-executed notebook. The implementation is intended both as a reusable research tool and as an
-executable specification that can be translated into compiled code or integrated into SageMath-style
-Python workflows.
+\texttt{quadratic\_diagonal} is a typed, dependency-free Python package for exact constructive
+representability by diagonal quadratic forms over maximal real quadratic orders. Given a squarefree
+radicand, totally positive coefficients, and a totally positive target, the public API decides
+representability, returns an integral witness when one exists, and verifies the certificate
+independently. The implementation combines exact weighted trace-form enumeration with constructive
+dynamic programming, meet-in-the-middle search, and a batched algorithm for all bounded targets. We
+prove the weighted discriminant identity, exact row-interval correctness, distinct-value
+asymptotics, and pseudo-polynomial arithmetic-step bounds. Every mathematical decision uses integer
+trace and norm arithmetic; floating point is confined to reported timings and plotting. The versioned
+software component contains command-line drivers, tests, independent validation sweeps, deterministic
+reproduction scripts, expected-output summaries, figures, and an executed notebook. A bounded
+validation corpus spanning 26 fields produced 2,998 weighted-search comparisons, 2,512 independent
+representability comparisons, 2,452 verified constructive certificates, and no discrepancy. The
+package is intended both as reusable mathematical software and as an executable specification for
+higher-performance implementations.
 \end{abstract}
 
 
@@ -132,7 +134,7 @@ Rothkegel later gave an algorithm for constructing anisotropic parts over number
 for isotropic vectors over arbitrary global fields \cite{KopSq,KopIso}. In the real-quadratic
 integral setting, Ra\v ska studied when all elements of $m\OD^+$ are sums of squares and gave an
 efficient algorithm for that family-wise question \cite{Raska}. The present repository is organised
-in the same spirit as the author's companion public repository \texttt{quadratic\_sos} \cite{KaniaQSOS},
+in the same spirit as the related public software repository \texttt{quadratic\_sos} \cite{KaniaQSOS},
 which treats the unweighted $\langle 1,\dots,1\rangle$ case. For broader arithmetic background on universal forms and
 indecomposables over totally real fields we refer to Kala's survey \cite{KalaSurvey}; recent work
 of Kala, Kr\'asensk\'y, and Romeo places criterion sets and diagonal universality in a general
@@ -640,11 +642,13 @@ Then Algorithm~1 scans exactly
 \[
 \frac{M_a(\alpha)-1}{2}
 \]
-canonical non-zero lattice points and performs
+canonical non-zero lattice points. Apart from integer-square-root evaluations used to determine row
+bounds and endpoints, it performs
 \[
 O\bigl(M_a(\alpha)+\sqrt{\Tr(\alpha)}+1\bigr)
 \]
-exact arithmetic steps, up to the cost of hash-table operations. It stores exactly $\#\cS_a(\alpha)$
+exact ring and integer operations, up to expected-amortised hash-table costs. It makes
+$O(\sqrt{\Tr(\alpha)}+1)$ calls to the exact integer square-root routine. It stores exactly $\#\cS_a(\alpha)$
 distinct weighted values and one witness root for each value. In particular, for fixed $a$ the
 running time is $\Theta_a(\Tr(\alpha))$.
 \end{theorem}
@@ -655,7 +659,7 @@ The algorithm scans precisely the rows with
 0\le n\le \left\lfloor \sqrt{\frac{4A_a\Tr(\alpha)}{\delta_a}}\right\rfloor,
 \]
 so the number of row computations is $O(\sqrt{\Tr(\alpha)}+1)$. On each scanned row,
-Proposition~\ref{prop:row-interval} computes the exact interval in constant-time arithmetic. The
+Proposition~\ref{prop:row-interval} computes the exact interval using a constant number of arithmetic operations and exact integer-square-root evaluations. The
 inner loop visits exactly the canonical non-zero lattice points in the trace ellipse
 $\cE_a(\Tr(\alpha))$: for rows $n>0$ it scans the full integer interval, while on the central row it
 keeps only positive abscissae. Every non-zero lattice point in the trace ellipse belongs to a unique
@@ -666,8 +670,14 @@ $O(\Tr(\alpha))$, the hash-table insertions and lookups run in expected amortise
 operation. The final statement follows from Corollary~\ref{cor:candidate-asymptotic}.
 \end{proof}
 
-\begin{remark}
-All complexity statements in the paper are arithmetic-step bounds for exact integer operations. In a bit-complexity model one must additionally account for the growth of the integer coordinates and of the trace and norm computations, which are polynomial in the input size for fixed field and fixed lattice.
+\begin{remark}[Complexity model]
+Unless stated otherwise, the bounds count exact ring operations, integer comparisons, hash-table
+operations in expected amortised constant time, and calls to an exact integer-square-root routine.
+For fixed $D$ and fixed coefficients, every coordinate encountered by the single-target algorithms
+has bit length polynomial in the bit length of the input coordinates. Hence the corresponding bit
+cost is obtained by multiplying the arithmetic-step counts by polynomial-time big-integer arithmetic
+costs. The pseudo-polynomial statements are deliberately expressed in the numerical parameters
+$\Tr(\alpha)$ or $B$; they are not polynomial-time claims in the binary encoding of those bounds.
 \end{remark}
 
 \begin{remark}
@@ -946,24 +956,20 @@ Finally, if $u,v>0$ with $u+v=\Tr(\alpha)$, then $uv\le (u+v)^2/4$, so
 $\N(\alpha)=\sigma_1(\alpha)\sigma_2(\alpha)\le \Tr(\alpha)^2/4$.
 \end{proof}
 
-\begin{remark}
-The hidden constant in Theorem~\ref{thm:single-pseudopoly} depends on the rank $r$, on the
-coefficient list through the constants in Corollary~\ref{cor:distinct-asymptotic}, and on the field
-through $\Disc(K_D)^{-1/2}$ in Proposition~\ref{prop:single-box-count}. More explicitly, the
-preprocessing stage costs $O(u\,\Tr(\alpha))$ by Proposition~\ref{prop:caching}, where $u$ is the
-number of distinct coefficients, and each DP layer costs
-\[
-O\!\left(\#\cB(\alpha)\,\Tr(\alpha)\right)
-=
-O\!\left(\Tr(\alpha)\left(\frac{\N(\alpha)}{\sqrt{\Disc(K_D)}}+\Tr(\alpha)\right)\right).
-\]
-Thus the constructive DP runtime is bounded by
+\begin{remark}[Dependence on the field and rank]
+Let $u$ be the number of distinct diagonal coefficients. Combining
+Propositions~\ref{prop:single-box-count} and~\ref{prop:caching} gives the more explicit
+arithmetic-step bound
 \[
 O\!\left(
-r\,\Tr(\alpha)\left(\frac{\N(\alpha)}{\sqrt{\Disc(K_D)}}+\Tr(\alpha)\right)
-\right),
+ u\,\Tr(\alpha)
+ + r\,\Tr(\alpha)
+ \left(\frac{\N(\alpha)}{\sqrt{\Disc(K_D)}}+\Tr(\alpha)+1\right)
+\right).
 \]
-with the simpler $O(\Tr(\alpha)^3)$ form arising when $K_D$ and $L$ are fixed.
+The first term is weighted-set preprocessing with caching, and the second bounds the $r$ dynamic-
+programming layers. For a fixed field and fixed lattice this reduces to the statement of
+Theorem~\ref{thm:single-pseudopoly}.
 \end{remark}
 
 \begin{proposition}[Meet-in-the-middle]\label{prop:mitm}
@@ -1009,15 +1015,13 @@ O\!\left(
 \min\{\#L_t(\alpha),\#R_{r-t}(\alpha)\}
 \right)
 \]
-exact arithmetic steps and stores
+exact arithmetic steps and stores $O(\#L_t(\alpha)+\#R_{r-t}(\alpha))$ distinct half sums. In the constructive
+implementation each table entry also stores a root-choice tuple of length at most $r$, so the
+witness payload occupies
 \[
-O\!\left(
-\sum_{j=1}^{t}\#L_j(\alpha)
-+
-\sum_{j=1}^{r-t}\#R_j(\alpha)
-\right)
+O\!\left(r\bigl(\#L_t(\alpha)+\#R_{r-t}(\alpha)\bigr)\right)
 \]
-states.
+coefficient-pair slots.
 \end{corollary}
 
 \begin{proof}
@@ -1028,9 +1032,11 @@ gives the two summands in the time bound. Proposition~\ref{prop:mitm} shows that
 tables are built, the final join scans only the smaller half table and performs one hash lookup per
 state, which contributes the last summand.
 
-For the space bound, the constructive implementation stores one predecessor table for each half-layer,
-and the $j$th predecessor table has exactly $\#L_j(\alpha)$ or $\#R_j(\alpha)$ entries. Summing over
-the layers gives the claim.
+The implementation constructs each half table with a rolling dictionary: a state stores one complete
+choice tuple for the coefficients already processed, and the previous dictionary is discarded when
+the next layer has been formed. Thus the final state-table storage is
+$O(\#L_t(\alpha)+\#R_{r-t}(\alpha))$. Accounting for the stored constructive tuples multiplies the
+number of entries by at most $r$.
 \end{proof}
 
 \begin{remark}
@@ -1121,7 +1127,10 @@ therefore invariant as well.
 \end{proof}
 
 \begin{remark}
-The implementation now includes an exact balancing helper based on first-embedding sign tests. By
+The implementation includes an exact balancing helper based on first-embedding sign tests. It locates
+the unique half-open normal-form representative by exponential search followed by a descending
+binary-greedy refinement; an orbit displacement of $n$ unit-square steps therefore needs
+$O(\log(1+n))$ exact multiplications and comparisons rather than $O(n)$ one-step iterations. By
 Proposition~\ref{prop:balance-invariant}, balancing does not change the exact row-candidate count,
 because that count is governed by the trace ellipse itself. Balancing is still useful for auxiliary
 box baselines: in $D=5$ and trace bound $B=100$, the coefficient $(89,144)$ balances to $(1,0)$; the
@@ -1277,8 +1286,8 @@ for each target separately.
 
 \section{Software availability, reproducibility, and benchmark data}\label{sec:impl}
 
-The accompanying public repository \url{https://github.com/tomaszkania/quadratic_diagonal} is the
-software artefact for this paper. It contains the installable package, exact arithmetic in $\OD$,
+Version~1.1.0 of the public repository
+\url{https://github.com/tomaszkania/quadratic_diagonal} is the software artefact for this paper. It contains the installable package, exact arithmetic in $\OD$,
 exact order comparison via Corollary~\ref{cor:comparison}, exact weighted trace-form enumeration,
 constructive DP and meet-in-the-middle representability, and the batched bounded-truant routine of
 Section~\ref{sec:bounded}. The code stores distinct weighted values by default, reorders the
@@ -1288,10 +1297,53 @@ is intentionally simple: \texttt{python -m pytest -q} runs the regression suite,
 \texttt{python scripts/run\_all\_checks.py} runs the non-interactive TOMS smoke test,
 \texttt{python scripts/reproduce\_tables.py} regenerates the TSV tables in \path{data/} together
 with the performance plots in \path{paper/figures/}, and the executed notebook reproduces the
-worked examples. The repository is organised in the same spirit as the companion public repository
+worked examples. The repository is organised in the same spirit as the related public repository
 \texttt{quadratic\_sos}~\cite{KaniaQSOS} for the unweighted case. The \path{submission/}
 directory contains the separated article PDF and software-component archive expected for a TOMS
 Algorithm-paper submission.
+
+\subsection*{Public interface and validation design}
+
+The stable public entry points are summarised below. All algebraic elements are represented by
+integer coefficient pairs in the integral basis $\{1,\omega_D\}$.
+\begin{table}[tbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{l X}
+\toprule
+API entry point & Contract \\
+\midrule
+\texttt{RealQuadraticOrder} & validates a squarefree radicand and supplies exact order arithmetic and comparisons; \\
+\texttt{enumerate\_weighted\_search} & returns distinct values $ax^2\preccurlyeq\alpha$, one root certificate per value, and structural search statistics; \\
+\texttt{diagonal\_representability\_dp} & decides representability and returns a verified root tuple by constructive dynamic programming; \\
+\texttt{diagonal\_representability\_mitm} & provides the same contract through a constructive meet-in-the-middle solver; \\
+\texttt{batched\_bounded\_representables} & computes all represented targets below a trace bound in one pass; \\
+\texttt{verify\_representation} & independently checks that a returned root tuple has the requested coefficientwise sum. \\
+\bottomrule
+\end{tabularx}
+\caption{Principal public API of \texttt{quadratic\_diagonal} 1.1.0.}
+\label{tab:api}
+\end{table}
+
+The validation path is intentionally more redundant than the production path. Exact row search is
+compared with an independent sharp-box scan; DP and meet-in-the-middle are compared with explicit
+Cartesian products on bounded instances; every constructive output is checked by
+\texttt{verify\_representation}; and batched bounded search is compared with independent per-target
+recomputation. In the full bundled sweep over all squarefree $D\le 41$ and the stated bounded
+coefficient/target ranges, this gives the deterministic totals in Table~\ref{tab:validation-summary}.
+\begin{table}[tbp]
+\centering
+\small
+\begin{tabular}{rrrrr}
+\toprule
+Fields & weighted searches & representability cases & certificates & bounded cases \\
+\midrule
+26 & 2998 & 2512 & 2452 & 104 \\
+\bottomrule
+\end{tabular}
+\caption{Independent validation corpus; every comparison agreed.}
+\label{tab:validation-summary}
+\end{table}
 
 The empirical comparisons therefore focus on the right quantities.
 \begin{enumerate}[label=\textup{(\roman*)},itemsep=0.2em]
@@ -1408,15 +1460,14 @@ $D$ & $\alpha$ & ord & $|\prod_i V_i(\alpha)|$ & pre & DPt & MITt & generic \\
 13 & $(18,0)$ & $[1,2,0,3]$ & 3600 & 0.046 & 0.343 & 0.127 & 1.203 \\
 \bottomrule
 \end{tabular}
-\caption{Surrogate general-purpose exact baseline for single-target representability. The ``generic'' column expands the full Cartesian product of the value lists after the same exact preprocessing used by DP and meet-in-the-middle.}
+\caption{Internal Cartesian-product exact baseline for single-target representability. The ``generic'' column expands the full Cartesian product of the value lists after the same exact preprocessing used by DP and meet-in-the-middle.}
 \label{tab:generic}
 \end{table}
 
-Table~\ref{tab:generic} is the TOMS-facing comparison point. The artefact does not depend on an
-external CAS, so instead of timing SageMath or PARI/GP directly we bundle a reproducible generic
-exact baseline that mirrors the post-enumeration task a general-purpose system would still have to
+Table~\ref{tab:generic} isolates the combination-layer advantage of the specialised solvers. The artefact does not depend on an
+external CAS, so we bundle a reproducible internal Cartesian-product baseline that mirrors the post-enumeration task a general-purpose system would still have to
 solve: given the exact weighted-value sets, search their full Cartesian product for a representation.
-This keeps the comparison portable while still showing the algorithmic advantage of reusing partial
+This is not presented as a proxy for the complete behaviour of any particular computer algebra system; it keeps the comparison portable while showing the algorithmic advantage of reusing partial
 sums. The structural column $|\prod_i V_i(\alpha)|$ records the raw search size of that baseline.
 
 \begin{figure}[tbp]
@@ -1528,7 +1579,7 @@ $D$ & coefficients & $B$ & bounded truant set \\
 \label{tab:arith}
 \end{table}
 
-Table~\ref{tab:arith} is the first genuine arithmetic output of the note: explicit bounded truant
+Table~\ref{tab:arith} gives illustrative arithmetic output: explicit bounded truant
 profiles for several real-quadratic lattices. The second row corresponds to the classical ternary
 lattice
 \[
@@ -1585,6 +1636,16 @@ computations of the type considered by Kala--Kr\'asensk\'y--Romeo \cite{KKR}. Fi
 DP and meet-in-the-middle state-count bounds are purely combinatorial; it would be interesting to
 sharpen them by exploiting additional multiplicative structure inside $\OD^+$.
 
+
+\section*{Software and data availability}
+The complete source, tests, examples, notebook, deterministic data, and reproduction drivers for
+version~1.1.0 are available at
+\url{https://github.com/tomaszkania/quadratic_diagonal}. The TOMS software component is generated
+from that source by \path{scripts/make_submission_archive.py}; it includes SHA-256 checksums and
+requires no proprietary dependency. No external research data were used.
+
+\section*{Conflict of interest}
+The author declares that there is no conflict of interest.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}

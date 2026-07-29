@@ -1,4 +1,6 @@
-quadratic_diagonal smoke test OK
-timestamp_utc=2026-05-17T21:04:14.882259+00:00
-regression_tests=17
-drivers=pytest,reproduce_tables,validation_sweep
+quadratic_diagonal checks OK
+version=1.1.0
+timestamp_utc=2026-07-26T21:48:32.582026+00:00
+regression_tests=22
+validation=full
+notebook=yes

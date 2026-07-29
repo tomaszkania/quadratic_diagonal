@@ -8,12 +8,13 @@ authors:
     email: "tomasz.marcin.kania@gmail.com"
 repository-code: "https://github.com/tomaszkania/quadratic_diagonal"
 license: "MIT"
-version: "0.2.0"
+version: "1.1.0"
+date-released: "2026-07-26"
 preferred-citation:
   type: article
   authors:
     - family-names: "Kania"
       given-names: "Tomasz"
-  title: "Exact diagonal representability over real quadratic orders via weighted trace-form enumeration"
+  title: "quadratic_diagonal: Exact constructive diagonal representability over real quadratic orders"
   year: 2026
-  journal: "Preprint"
+  journal: "ACM Transactions on Mathematical Software, submitted"

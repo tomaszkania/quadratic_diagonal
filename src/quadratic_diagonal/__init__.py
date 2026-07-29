@@ -4,7 +4,7 @@ This package provides exact constructive representability algorithms for
 diagonal quadratic lattices over maximal real quadratic orders.
 """
 
-__version__ = "0.2.0"
+__version__ = "1.1.0"
 
 from .weighted_diagonal_exact import (
     Pair,
@@ -42,6 +42,7 @@ from .weighted_diagonal_exact import (
     benchmark_representability,
     benchmark_bounded_truants,
     benchmark_generic_baseline,
+    verify_representation,
     format_pair,
 )
 
@@ -82,5 +83,6 @@ __all__ = [
     'benchmark_representability',
     'benchmark_bounded_truants',
     'benchmark_generic_baseline',
+    'verify_representation',
     'format_pair',
 ]

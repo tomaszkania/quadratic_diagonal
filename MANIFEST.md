@@ -1,13 +1,14 @@
 # Manifest
 
-Source-tree contents for the `quadratic_diagonal` 0.2.0 TOMS submission.
-Generated submission archives in `submission/` and transient build files are omitted.
+Source-tree contents for `quadratic_diagonal` 1.1.0. Generated submission archives and transient build files are omitted.
 
-- `MANIFEST.md`
+- `.github/workflows/ci.yml`
 - `.gitignore`
+- `CALGO_README.txt`
 - `CHANGELOG.md`
 - `CITATION.cff`
 - `LICENSE`
+- `MANIFEST.md`
 - `Makefile`
 - `README.md`
 - `SUBMISSION_CHECKLIST.md`
@@ -21,7 +22,13 @@ Generated submission archives in `submission/` and transient build files are omi
 - `data/benchmark_representability.tsv`
 - `data/optional_cas_baselines.tsv`
 - `data/run_all_checks_summary.txt`
+- `data/validation_summary.json`
+- `dist/quadratic_diagonal-1.1.0-py3-none-any.whl`
+- `docs/API.md`
+- `docs/PORTABILITY.md`
+- `examples/quickstart.py`
 - `notebooks/paper_illustrations.ipynb`
+- `paper/exact_diagonal_representability_real_quadratic.bbl`
 - `paper/exact_diagonal_representability_real_quadratic.pdf`
 - `paper/exact_diagonal_representability_real_quadratic.tex`
 - `paper/figures/bounded_runtime.pdf`
@@ -35,11 +42,15 @@ Generated submission archives in `submission/` and transient build files are omi
 - `paper/references.bib`
 - `pyproject.toml`
 - `requirements.txt`
+- `scripts/full_validation.py`
 - `scripts/make_submission_archive.py`
 - `scripts/optional_cas_baselines.py`
 - `scripts/reproduce_tables.py`
 - `scripts/run_all_checks.py`
 - `scripts/validation_sweep.py`
 - `src/quadratic_diagonal/__init__.py`
+- `src/quadratic_diagonal/__main__.py`
+- `src/quadratic_diagonal/cli.py`
+- `src/quadratic_diagonal/py.typed`
 - `src/quadratic_diagonal/weighted_diagonal_exact.py`
 - `tests/test_all.py`
